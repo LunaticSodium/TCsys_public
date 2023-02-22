@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 class event;
+class person;
 
 typedef std::pair<std::string, std::string> IDENTITY;
 typedef float MONEY;

@@ -1,7 +1,10 @@
 #pragma once
-#include "tdprojet-tricount.h"
+#include "reaction.h"
+
 class majcount
+	:public reaction
 {
+
 public:
 };
 

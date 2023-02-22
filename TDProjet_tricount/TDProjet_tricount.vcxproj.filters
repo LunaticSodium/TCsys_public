@@ -27,6 +27,9 @@
     <ClInclude Include="person.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="reaction.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="majcount.cpp">
@@ -36,6 +39,12 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="person.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="reaction.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
