@@ -7,10 +7,10 @@ class person
 private:
 	IDENTITY _identity;
 	MONEY _capital;
-	EVENT_LIST _events;
+	ID_LIST _events;
 	void receiveConstuit(MONEY rcv);
 public:
-	person(IDENTITY id = IDENTITY("Alex","Socrate"), MONEY rcv = 0, EVENT_LIST events = EVENT_LIST());
+	person(IDENTITY id = IDENTITY("Alex","Socrate"), MONEY rcv = 0, ID_LIST events = ID_LIST());
 	IDENTITY getIdentity() { return _identity; };
 	void setIdentity(IDENTITY newidentity);
 	void participe(event eve);

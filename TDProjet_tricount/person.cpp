@@ -1,6 +1,6 @@
 #include "person.h"
 
-person::person(IDENTITY id, MONEY rcv, EVENT_LIST events)
+person::person(IDENTITY id, MONEY rcv, ID_LIST events)
 {
 	_identity = id;
 	_events = events;
