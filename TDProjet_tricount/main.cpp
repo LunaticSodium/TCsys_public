@@ -1,2 +1,2 @@
 #include <cstdio>
-#include "majcount.h"
+#include "tcsys.h"

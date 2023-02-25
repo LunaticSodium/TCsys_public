@@ -127,18 +127,18 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="event.h" />
-    <ClInclude Include="majcount.h" />
+    <ClInclude Include="bill.h" />
     <ClInclude Include="person.h" />
     <ClInclude Include="reaction.h" />
+    <ClInclude Include="tcsys.h" />
     <ClInclude Include="tdprojet-tricount.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="event.cpp" />
-    <ClCompile Include="majcount.cpp" />
+    <ClCompile Include="bill.cpp" />
     <ClCompile Include="person.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="reaction.cpp" />
+    <ClCompile Include="tcsys.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

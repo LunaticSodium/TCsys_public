@@ -15,12 +15,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="majcount.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="event.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="tdprojet-tricount.h">
       <Filter>头文件</Filter>
     </ClInclude>
@@ -30,14 +24,14 @@
     <ClInclude Include="reaction.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="tcsys.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="bill.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="majcount.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="event.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="person.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
@@ -45,6 +39,12 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="reaction.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="tcsys.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="bill.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

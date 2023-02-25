@@ -5,6 +5,9 @@
 
 class reaction
 {
+private:
+	virtual void _refresh() = 0;								//After every change
+	virtual void _regist() = 0;									//Temparaly regist the stats to undo
 public:
 
 	//Person listed in : database (permanent), pool (in one trip), templist (for select into event).
@@ -27,7 +30,7 @@ public:
 	virtual void newEvent() = 0;								//Create a new event to pool by user, bonded with person in the templist and clear the templist, Triggered by '+'
 	virtual void fastNewEvent() = 0;							//Create a new event with minimun info: one person (selected by the right trigger not templist) & receivable  
 
-	virtual void selevtAllEvent() = 0;							
+	virtual void selectAllEvent() = 0;							
 	virtual void selectOneEvent() = 0;
 
 	virtual void unSelectEvent() = 0;
