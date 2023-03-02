@@ -1,5 +1,5 @@
 #pragma once
-//For public def. Move to event.h
+//For public def. Move to bill.h
 
 #include <string>
 #include <vector>

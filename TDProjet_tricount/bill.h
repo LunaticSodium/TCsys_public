@@ -11,6 +11,7 @@ typedef float MONEY;
 typedef unsigned int ID;
 typedef bool REVERSE;
 typedef std::pair<std::string, std::string> IDENTITY;
+typedef std::pair<bill, bill> billpair;
 typedef std::vector<bill> BILL_LIST;
 typedef std::vector<ID> ID_LIST;
 typedef std::vector<person> PERSON_LIST;
@@ -19,7 +20,7 @@ typedef std::vector<person> PERSON_LIST;
 class bill
 {
 private:
-	ID _id;								//-1 by default but should NEVER be default.
+	ID _id;										//-1 by default but should NEVER be default.
 	MONEY _amount;								//As receivable, gain a positive capital to participater, by default.
 	std::string _name;
 	REVERSE _rvs;								//True IF positive amount means the owner received from this event and should pay, so gain a negative capital. False by default.
@@ -44,17 +45,20 @@ public:
 	std::string getContest() const { return _contest; };
 	REVERSE doesReverse() const { return _rvs; };
 	MONEY getAmount() const { return _amount; };
+	MONEY setAmount(MONEY amount) { _amount = amount; return _amount; };
 	MONEY getReceive() const { return _amount * (_rvs ? -1 : 1); };
 	std::string &getContest()  { return _contest; };
 	std::string setContest(std::string newcontest) { return (_contest = newcontest); };
+
+	std::string selfPrint();
 };
 
-
+/*
 class billpair
 {
 public:
 	std::pair<bill, bill> twin;
 	billpair(std::pair<bill, bill> pair) { twin = pair; };
-	MONEY sum(int num1 = 1, int num2 = 1) { return twin.first.getReceive() * num1 + twin.second.getReceive() * num2 };
-};
+	MONEY sum(int num1 = 1, int num2 = 1) { return twin.first.getReceive() * num1 + twin.second.getReceive() * num2; };
+};*/
 

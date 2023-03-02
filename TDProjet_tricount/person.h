@@ -1,19 +1,30 @@
 #pragma once
-#include "tdprojet-tricount.h"
+//#include "tdprojet-tricount.h"
 #include "bill.h"
 
 class person
 {
 private:
+
+#ifndef CAPITAL_IGNORE
+	MONEY _capital;		
+	//could always be 0 for convinience. That present how much he have already paid so should be minus from his debt. 
+	//But we could totally use a bill to include that so as i do
+public:
+	MONEY getCapital() { return _capital; };
+private:
+#endif // !CAPITAL_IGNORE
+
 	IDENTITY _identity;
-	MONEY _capital;
 	ID_LIST _events;
-	void _receiveConstuit(MONEY rcv);
+	void _receiveConstuit(const MONEY rcv);
 public:
 	person(IDENTITY id = IDENTITY("Alex","Socrate"), MONEY rcv = 0, ID_LIST events = ID_LIST());
-	IDENTITY getIdentity() { return _identity; };
-	void setIdentity(IDENTITY newidentity);
-	void participe(bill bl);
-	BILL_LIST findBill(BILL_LIST bllist);
+	IDENTITY getIdentity() const { return _identity; };
+	void setIdentity(const IDENTITY newidentity);
+	ID_LIST getBills() const { return _events; };
+	void participe(const bill bl);
+	std::string printBill(const BILL_LIST bllist) const;
+	MONEY capital(const BILL_LIST bllist) const;																//and so we could find his capital
 };
 
