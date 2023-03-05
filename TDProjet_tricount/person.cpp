@@ -32,6 +32,12 @@ void person::participe(const bill bl)
 	return;
 }
 
+void person::participe(const ID bl_id)
+{
+	_events.push_back(bl_id);
+	return;
+}
+
 std::string person::printBill(const BILL_LIST bllist) const
 {
 	std::string prt;
