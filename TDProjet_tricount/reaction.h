@@ -20,7 +20,7 @@ public:
 	virtual void cancelPerson() = 0;							//Delete a person from current pool so templist
 	virtual void deleteSelectedPerson() = 0;					//Delete a person from all list
 
-	virtual void clearSelectedPerson() = 0;						//Erease a person's debt/capital as cleared
+	virtual void unselectAll() = 0;						//Erease a person's debt/capital as cleared
 	virtual void copyPersonalBill() = 0;						//Copy a person's bill to copyboard.
 
 
@@ -28,12 +28,12 @@ public:
 	//Event listed in pool and templist, no database.
 
 	virtual void newEvent() = 0;								//Create a new event to pool by user, bonded with person in the templist and clear the templist, Triggered by '+'
-	virtual void fastNewEvent() = 0;							//Create a new event with minimun info: one person (selected by the right trigger not templist) & receivable  
+	virtual void fastNewEventPair() = 0;							//Create a new event with minimun info: one person (selected by the right trigger not templist) & receivable  
 
 	virtual void selectAllEvent() = 0;							
 	virtual void selectOneEvent() = 0;
 
-	virtual void unSelectEvent() = 0;
+	virtual void unselectEvent() = 0;
 	virtual void deleteSelectedEvent() = 0;
 
 

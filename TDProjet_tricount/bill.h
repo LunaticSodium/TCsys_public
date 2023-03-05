@@ -5,7 +5,7 @@
 #include <vector>
 class bill;
 class person;
-class billpair;
+//class billpair;
 
 typedef float MONEY;
 typedef unsigned int ID;

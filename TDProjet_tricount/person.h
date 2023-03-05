@@ -24,6 +24,7 @@ public:
 	void setIdentity(const IDENTITY newidentity);
 	ID_LIST getBills() const { return _events; };
 	void participe(const bill bl);
+	void participe(const ID bl_id);
 	std::string printBill(const BILL_LIST bllist) const;
 	MONEY capital(const BILL_LIST bllist) const;																//and so we could find his capital
 };
