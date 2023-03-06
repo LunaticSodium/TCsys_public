@@ -102,7 +102,7 @@ private:
                                                     //NOT all of these function geste the get/set point of _file, and _file.open is often in different mode
                                                     //make SURE that use always readALL() outside of itself 
 
-    void _datafileToTcsys(vector<string> const part);            //convert a part start with classname/typename and end with "end" into _pool
+    int _datafileToTcsys(vector<string> const part);            //convert a part start with classname/typename and end with "end" into _pool
 
     void _regist(void) { return; };	                //convert a member into part. regist the change of system into file in current get point.
     void _regist(bill const bl);
@@ -147,7 +147,7 @@ public:
 
     //Event listed in pool and templist, no database. Class event is renamed as bill because it's actually a key word.
 
-    void newEvent(MONEY const amount = 0, string const name = "\n", string const contest = "\n");
+    bill newEvent(MONEY const amount = 0, string const name = "\n", string const contest = "\n", bool single = false);
     //void newEvent(string const amount, string const name = "\n", string const contest = "\n") { newEvent(stof(amount), name, contest); return; };
     //void fastNewEventPair(MONEY const amount);
 

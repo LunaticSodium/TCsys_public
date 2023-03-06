@@ -1,18 +1,18 @@
 #include "person.h"
-
-person::person(IDENTITY id, MONEY rcv, ID_LIST events)
+/*
+person::person(IDENTITY id,  ID_LIST events)
 {
 	_identity = id;
 	_events = events;
 
 #ifndef CAPITAL_IGNORE
-	_capital = 0;
+	capital = 0;
 #endif // !CAPITAL_IGNORE
 
 	if (rcv != 0) _receiveConstuit(rcv);
-}
+}*/
 
-void person::_receiveConstuit(const MONEY rcv)
+void person::receiveConstuit(const MONEY rcv)
 {
 	bill bl(0, rcv,"Enter by paid",false,"Created by the construction of person "+_identity.first+" . " +_identity.second);
 	participe(bl);
@@ -46,12 +46,12 @@ std::string person::printBill(const BILL_LIST bllist) const
 	return prt;
 }
 
-MONEY person::capital(const BILL_LIST bllist) const
+MONEY person::getCapital(const BILL_LIST bllist) const
 {
 	MONEY cpt = 0;
 	for (bill bl : bllist) for (int id : _events) if (bl.getEventID() == id) cpt += bl.getReceive();
 #ifndef CAPITAL_IGNORE
-	cpt += _capital;
+	cpt += capital;
 #endif // !CAPITAL_IGNORE
 	return cpt;
 }

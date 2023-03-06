@@ -94,15 +94,30 @@ vector<string> tcsys::_read(ifstream& ifile)
 	vector<string> part;												//whick start with class name and end with "end", all mini
 	//streampos part_start_line = -1;
 	while (std::getline(ifile, line)) {
-		if (!line.empty() && line != "end") {
-		/*	part_start_line = ifile.tellg();
-			continue;
-		}
-		if (part_start_line != -1)			*/
-			part.push_back(line);
-		}
+		if(!line.empty()) part.push_back(line);
+#ifdef DEBUG
+		cout << to_string(ifile.tellg()) << "pass\n";
+#endif // DEBUG
+		//if (!line.empty() && line != "end") {
+			//part_start_line = ifile.tellg();
+			//continue;
+		//}
+		//if (part_start_line != -1){		
+			//part.push_back(line);
+#ifdef DEBUG
+			cout << line << "pass\n";
+#endif // DEBUG
+		//}
 		if (line == "end") break;
 	}
+	while (line.empty())
+	{
+		std::getline(ifile, line);
+		if (ifile.tellg() == -1) break;
+	}
+#ifdef DEBUG
+	cout << line << "pass\n";
+#endif // DEBUG
 	return part;
 }//finish
 
@@ -123,7 +138,7 @@ vector<vector<string>> tcsys::_readAll(string const file_name)
 	streampos end = ifile.tellg();
 	//ifile.seekg(g_current);
 	ifile.seekg(0, ios::beg);
-	while (ifile.tellg() < end || ifile.tellg() == -1)
+	while (ifile.tellg() < end && ifile.tellg() != -1)
 	{
 		parts.push_back(_read(ifile));
 #ifdef DEBUG
@@ -137,8 +152,9 @@ vector<vector<string>> tcsys::_readAll(string const file_name)
 	return parts;
 }//finish
 
-void tcsys::_datafileToTcsys(vector<string> const part)
+int tcsys::_datafileToTcsys(vector<string> const part)
 {
+	if (part.size() == 0)return 0;
 	int i = 0;
 	while (part[i].empty() && i < part.size() - 1) i++;					//jump over the empty line
 	string part_type= part[i++];
@@ -218,7 +234,8 @@ void tcsys::_datafileToTcsys(vector<string> const part)
 			ID_LIST trid_list;
 			int trid = -1;
 			while (ss >> trid) trid_list.push_back(trid);
-			person trperson(tridtt, trcapital, trid_list);
+			person trperson(tridtt, trid_list);
+			trperson.receiveConstuit(trcapital);
 			_p().pspool.push_back(trperson);
 			bool already_in_personbase = false;
 			for (const person& ps : _personbase) if (ps.getIdentity() == tridtt)	//for (int j = 0; j < _personbase.size(); j++) if (_personbase[j].getIdentity() == tridtt)
@@ -230,7 +247,16 @@ void tcsys::_datafileToTcsys(vector<string> const part)
 		}
 		case PART_TYPE::PL:
 		{
-			_cpn = stoi(part[i++]);
+			ID pl_id = stoi(part[i++]);
+			bool existence = false;
+			for (POOL pl : _pool) if (pl.pl_id == pl_id) existence = true;
+			if (!existence)
+			{
+				POOL new_pool;
+				new_pool.pl_id = pl_id;
+				_pool.push_back(new_pool);
+			}
+			_cpn = pl_id;
 			break;
 		}
 		case PART_TYPE::DF:
@@ -241,6 +267,7 @@ void tcsys::_datafileToTcsys(vector<string> const part)
 		default:
 		{
 			cout << " enum switcher error : PART_TYPE\n";
+			return 1;
 			break;
 		}
 	}
@@ -256,7 +283,7 @@ void tcsys::_datafileToTcsys(vector<string> const part)
 		vector<string> nextpart(part.begin() + i, part.end());
 		_datafileToTcsys(nextpart);
 	}
-	return;
+	return 0;
 }//finish
 
 
@@ -299,7 +326,7 @@ void tcsys::_regist(ID const pl_id)//will change the _cpn to pl_id
 	return;
 }//finish
 
-void tcsys::_registOne(void)//without Type T ,genetic or <any>.type(), which is totally a overkill, we use function overload. 
+void tcsys::_registOne()//without Type T ,genetic or <any>.type(), which is totally a overkill, we use function overload. 
 {
 	if (_file.is_open()) _file.close();
 	_file.open(DATA_FILE_NAME, ios::out | ios::app);
@@ -408,6 +435,12 @@ int tcsys::_initTcsys()
 #endif // DEBUG
 
 	vector<vector<string>> parts = _readAll(DATA_FILE_NAME);
+	if (parts.empty())
+	{
+		POOL pl;
+		pl.pl_id = 0;
+		_registOne(pl.pl_id);
+	}
 	for (int i = 0; i < parts.size(); i++) _datafileToTcsys(parts[i]);
 	_loadConfig();
 	return 0;
@@ -474,9 +507,14 @@ int tcsys::_loadConfig()
 			iss >> str;
 			_config.bill_generate_as_pair = (str == "1");
 		}
+		else if (config_type == "end")
+		{
+			break;
+		}
 		else
 		{
 			cout << "config_line " << config_line << " transfer failed\n";
+			//return 1;
 		}
 	}
 
@@ -510,7 +548,10 @@ tcsys::~tcsys()
 
 void tcsys::newPerson(string const firstname, string const lastname, MONEY const rcv)
 {
-	person ps(IDENTITY(firstname, lastname), rcv);
+
+	person ps(IDENTITY(firstname, lastname));
+	//ps.receiveConstuit(rcv);
+	ps.participe(newEvent(rcv, "pre paid", "rcv for new person"));
 	_p().pspool.push_back(ps);
 	_registOne(ps);
 	return;
@@ -576,9 +617,9 @@ void tcsys::copyPersonalBill()
 			{
 
 			}*/
-			bills += "capital total : " + to_string(ps.capital(_p().blpool)) + '\n';
+			bills += "capital total : " + to_string(ps.getCapital(_p().blpool)) + '\n';
 #ifdef DEBUG
-			cout << to_string(ps.capital(_p().blpool));
+			cout << to_string(ps.getCapital(_p().blpool));
 #endif // DEBUG
 		}
 	}
@@ -589,10 +630,11 @@ void tcsys::copyPersonalBill()
 	return;
 }//finish
 
-void tcsys::newEvent(MONEY const amount, std::string const name, std::string const contest)
+bill tcsys::newEvent(MONEY const amount, std::string const name, std::string const contest, bool single)
 {
 	const int num_selected = _select.pspool.size();
-	const ID bl_id = _p().blpool.back().getEventID() + 1;
+	ID bl_id = 0;
+	if (!_p().blpool.empty()) bl_id = _p().blpool.back().getEventID() + 1;
 	string firstname, lastname;
 
 	MONEY am = amount;
@@ -600,6 +642,7 @@ void tcsys::newEvent(MONEY const amount, std::string const name, std::string con
 
 	bill bl(bl_id, am, name, false, contest);
 	_p().blpool.push_back(bl);
+	_registOne(bl);
 
 	for (person& psp : _p().pspool)
 	{
@@ -613,11 +656,12 @@ void tcsys::newEvent(MONEY const amount, std::string const name, std::string con
 		}
 	}
 
-	if (_config.bill_generate_as_pair)
+	if (_config.bill_generate_as_pair && !single)
 	{
 		const int num_unselected = _p().pspool.size() - num_selected;
 		bill blc = bill::generateEventCounter(_p().blpool, bl, num_selected, num_unselected);
 		_p().blpool.push_back(blc);
+		_registOne(blc);
 
 		bool selected = false;
 		for (person& psp : _p().pspool)
@@ -629,7 +673,7 @@ void tcsys::newEvent(MONEY const amount, std::string const name, std::string con
 		}
 	}
 	unselectAll();
-	return;
+	return bl;
 }//finish
 
 void tcsys::selectAllEvent()
