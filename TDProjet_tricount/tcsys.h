@@ -86,10 +86,10 @@ private:
     //POOL _currentpool;                            present by _p now
     POOL _select;                                   //include which have been selected temperely
     vector<POOL> _pool,_undoredo;
-    ID _cpn,_ursp;                                  //current pool number and undo-redo stack position
+    ID _ursp;                                  //current pool number and undo-redo stack position
     fstream _file;                                  //no caplock plz, all in mini. notice that the get & set point of file is, in fact, as global. make sure it's well defined in beginning
     fstream _config_file;
-    POOL& _p() { return _pool[_cpn]; };
+    POOL& _p() { return _pool[_select.pl_id]; };
 
     CONFIG _config;
 
@@ -104,23 +104,23 @@ private:
 
     int _datafileToTcsys(vector<string> const part);            //convert a part start with classname/typename and end with "end" into _pool
 
-    void _regist(void) { return; };	                //convert a member into part. regist the change of system into file in current get point.
-    void _regist(bill const bl);
-    void _regist(person const ps);
-    void _regist(ID const pl_id);                   //also change _cpn at the last, same as readAll
+    int _regist(void) { return; };	                //convert a member into part. regist the change of system into file in current get point.
+    int _regist(bill const bl);
+    int _regist(person const ps);
+    int _regist(ID const pl_id);                   //also change _cpn at the last, same as readAll
 
-    void _registOne(void);                          //_regist can only be used by _rOne and _rAll, because they dont have _file.open() so they dont know it's ios in or out.
-    void _registOne(bill const bl);
-    void _registOne(person const ps);
-    void _registOne(ID const pl_id);                //only _rO(ID) will change _cpn in all registO/A function.
-    void _registAll();                              //rOne() like push_back, it add a new part in the LAST of file. rAll overwrite the whole file.
+    int _registOne(void);                          //_regist can only be used by _rOne and _rAll, because they dont have _file.open() so they dont know it's ios in or out.
+    int _registOne(bill const bl);
+    int _registOne(person const ps);
+    int _registOne(ID const pl_id);                //only _rO(ID) will change _cpn in all registO/A function.
+    int _registAll();                              //rOne() like push_back, it add a new part in the LAST of file. rAll overwrite the whole file.
     //void virtual _refresh()=0;                      //used to be the name of rereadall, well it suppose to be a function only calling a physic engine's refresh function
 
     int _initTcsys();                               //initiale the system by importing the file(str) as datapool(LIST). rely on _readAll() so also _read() and _datafileToTcsys()
 
     int _saveConfig();
     int _loadConfig();
-    void _copy(string const txt);                   //copy a text
+    int _copy(string const txt);                   //copy a text
 
     //streampos _locatepersonidlist(ID pl_id, IDENTITY idtt);
 
@@ -131,17 +131,17 @@ public:
     //desorla, down-below here, for safety reason, unless you just drinked a coffee and you know what you are doing,
     //these user-level functions shall use only these _f inbetween all private functions : _readAll(), _registOne(any) and _registAll()  ...  maybe also _refresh()
 
-    void newPerson(string const firstname, string const lastname, MONEY const rcv = 0);//in current pool
+    int newPerson(string const firstname, string const lastname, MONEY const rcv = 0);//in current pool
     //void addPerson(ID id);
-    void selectPerson(string const firstname, string const lastname);
+    int selectPerson(string const firstname, string const lastname);
 
-    void unSelectPerson(string const firstname, string const lastname);
-    void removePerson();
+    int unSelectPerson(string const firstname, string const lastname);
+    int removePerson();
     //void deleteSelectedPerson(ID id);
 
-    void unselectAll();
-    void checkoutPerson();
-    void copyPersonalBill();//copy *selected* persons' bills
+    int unselectAll();
+    int checkoutPerson();
+    int copyPersonalBill();//copy *selected* persons' bills
 
 
 
@@ -151,26 +151,26 @@ public:
     //void newEvent(string const amount, string const name = "\n", string const contest = "\n") { newEvent(stof(amount), name, contest); return; };
     //void fastNewEventPair(MONEY const amount);
 
-    void selectAllEvent();
-    void selectOneEvent(ID const bl_id);
+    int selectAllEvent();
+    int selectOneEvent(ID const bl_id);
 
-    void unselectAllEvent();
-    void unselectEvent(ID const bl_id);
-    void deleteSelectedEvent();
+    int unselectAllEvent();
+    int unselectEvent(ID const bl_id);
+    int deleteSelectedEvent();
 
 
     //Other system function.
-    void newPool();
-    void deletePool(ID const pl_id);
-    void switchPool(ID const pl_id);
+    int newPool();
+    int deletePool(ID const pl_id);
+    int switchPool(ID const pl_id);
 
-    void setExchangeRate(MONEY const rate);
+    int setExchangeRate(MONEY const rate);
     //MONEY getExchangeRate() { return exchange_rate; };
-    void exchange();
+    int exchange();
     //void reverseExchange();
 
-    void setConfig(CONFIG_TYPE const ct, bool const target);
-    void setConfig(int const ct, bool const target) { setConfig(bit_cast<CONFIG_TYPE,int>(ct), target); return; }
+    int setConfig(CONFIG_TYPE const ct, bool const target);
+    int setConfig(int const ct, bool const target) { setConfig(bit_cast<CONFIG_TYPE,int>(ct), target); return; }
 
     //void openConfigPage();
     //void openMainPage();
@@ -180,6 +180,6 @@ public:
     //void undo();
     //void redo();
 
-    void help();
+    int help();
 };
 

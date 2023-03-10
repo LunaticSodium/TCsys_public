@@ -2,3 +2,21 @@ pool
 0
 end
 
+person
+Scott
+Alex
+ 
+end
+
+bill
+0
+185
+Visa fee
+0
+fee of visa canadian
+end
+
+pool
+0
+end
+

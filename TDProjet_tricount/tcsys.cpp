@@ -116,7 +116,7 @@ vector<string> tcsys::_read(ifstream& ifile)
 		if (ifile.tellg() == -1) break;
 	}
 #ifdef DEBUG
-	cout << line << "pass\n";
+	//cout << line << "pass\n";
 #endif // DEBUG
 	return part;
 }//finish
@@ -146,7 +146,14 @@ vector<vector<string>> tcsys::_readAll(string const file_name)
 #endif // DEBUG
 	}
 #ifdef DEBUG
-	for (vector<string> vs : parts) for (string st : vs) cout << st;
+	for (vector<string> vs : parts)
+	{
+		for (string st : vs)
+		{
+			cout << st << '\n';
+		}
+		cout << '\n';
+	}
 #endif // DEBUG
 	ifile.close();
 	return parts;
@@ -235,7 +242,9 @@ int tcsys::_datafileToTcsys(vector<string> const part)
 			int trid = -1;
 			while (ss >> trid) trid_list.push_back(trid);
 			person trperson(tridtt, trid_list);
+#ifndef CAPITAL_IGNORE
 			trperson.receiveConstuit(trcapital);
+#endif // !CAPITAL_IGNORE
 			_p().pspool.push_back(trperson);
 			bool already_in_personbase = false;
 			for (const person& ps : _personbase) if (ps.getIdentity() == tridtt)	//for (int j = 0; j < _personbase.size(); j++) if (_personbase[j].getIdentity() == tridtt)
@@ -256,7 +265,7 @@ int tcsys::_datafileToTcsys(vector<string> const part)
 				new_pool.pl_id = pl_id;
 				_pool.push_back(new_pool);
 			}
-			_cpn = pl_id;
+			_select.pl_id = pl_id;
 			break;
 		}
 		case PART_TYPE::DF:
@@ -271,7 +280,7 @@ int tcsys::_datafileToTcsys(vector<string> const part)
 			break;
 		}
 	}
-	while (part[i].empty() && i < part.size() - 1) i++;
+	while (part[i].empty() && i < part.size() - 1 && part.size()>1) i++;
 
 	streampos g_current = _file.tellg();
 	_file.seekg(0, ios::end);
@@ -288,7 +297,7 @@ int tcsys::_datafileToTcsys(vector<string> const part)
 
 
 
-void tcsys::_regist(bill const bl)//i wish i have a generic type but i dont. I have no power here
+int tcsys::_regist(bill const bl)//i wish i have a generic type but i dont. I have no power here
 {
 	_file << "bill\n";
 	_file << bl.getEventID() << '\n';
@@ -297,10 +306,10 @@ void tcsys::_regist(bill const bl)//i wish i have a generic type but i dont. I h
 	_file << bl.doesReverse() << '\n';
 	_file << bl.getContest() << '\n';
 	_file << "end\n\n";
-	return;
+	return 0;
 }//finish
 
-void tcsys::_regist(person const ps)
+int tcsys::_regist(person const ps)
 {
 	_file << "person\n";
 	_file << ps.getIdentity().first << '\n';
@@ -308,43 +317,44 @@ void tcsys::_regist(person const ps)
 #ifndef CAPITAL_IGNORE
 	_file << ps.getCapital() << '\n';
 #endif // !CAPITAL_IGNORE
+	_file << ' ';
 	for (int i = 0; i < ps.getBills().size(); i++)
 	{
 		_file << ps.getBills()[i] << ' ';
 	}
 	_file << '\n';
 	_file << "end\n\n";
-	return;
+	return 0;
 }//finish
 
-void tcsys::_regist(ID const pl_id)//will change the _cpn to pl_id
+int tcsys::_regist(ID const pl_id)//will change the _cpn to pl_id
 {
 	_file << "pool\n";
 	_file << pl_id << '\n';
 	_file << "end\n\n";
-	_cpn = pl_id;
-	return;
+	_select.pl_id = pl_id;
+	return 0;
 }//finish
 
-void tcsys::_registOne()//without Type T ,genetic or <any>.type(), which is totally a overkill, we use function overload. 
+int tcsys::_registOne()//without Type T ,genetic or <any>.type(), which is totally a overkill, we use function overload. 
 {
 	if (_file.is_open()) _file.close();
 	_file.open(DATA_FILE_NAME, ios::out | ios::app);
 	_regist();
 	_file.close();
-	return;
+	return 0;
 }
 
-void tcsys::_registOne(bill const bl)
+int tcsys::_registOne(bill const bl)
 {
 	if (_file.is_open()) _file.close();
 	_file.open(DATA_FILE_NAME, ios::out | ios::app);
 	_regist(bl);
 	_file.close();
-	return;
+	return 0;
 }
 
-void tcsys::_registOne(person const ps)
+int tcsys::_registOne(person const ps)
 {
 	if (_file.is_open()) _file.close();
 	_file.open(DATA_FILE_NAME, ios::out | ios::app);
@@ -353,7 +363,7 @@ void tcsys::_registOne(person const ps)
 	return;
 }
 
-void tcsys::_registOne(ID const pl_id)
+int tcsys::_registOne(ID const pl_id)
 {
 	if (_file.is_open()) _file.close();
 	_file.open(DATA_FILE_NAME, ios::out | ios::app);
@@ -362,9 +372,9 @@ void tcsys::_registOne(ID const pl_id)
 	return;
 }
 
-void tcsys::_registAll()
+int tcsys::_registAll()
 {
-	ID cpn = _cpn;
+	ID cpn = _select.pl_id;
 	if (_file.is_open()) _file.close();
 	_file.open(DATA_FILE_NAME, ios::out | ios::trunc);
 	for (const POOL& pl : _pool)
@@ -375,37 +385,37 @@ void tcsys::_registAll()
 	_regist(cpn);
 	//_cpn = cpn;
 	_file.close();
-	return;
+	return 0;
 }//finish
 
 #ifndef ANDROID_DEPLOY
-void tcsys::_copy(string txt)//copy in windows, rely on <Windows.h>
+int tcsys::_copy(string txt)//copy in windows, rely on <Windows.h>
 {
 	if (!OpenClipboard(nullptr)) return;
 	if (!EmptyClipboard()) {
 		CloseClipboard();
-		return;
+		return 1;
 	}
 	HGLOBAL hMem = GlobalAlloc(GMEM_MOVEABLE, txt.size() + 1);
 	if (!hMem) {
 		CloseClipboard();
-		return;
+		return 2;
 	}
 	char* pMem = static_cast<char*>(GlobalLock(hMem));
 	if (!pMem) {
 		GlobalFree(hMem);
 		CloseClipboard();
-		return;
+		return 3;
 	}
 	strcpy_s(pMem, COPY_LENGTH, txt.c_str());
 	GlobalUnlock(hMem);
 	if (!SetClipboardData(CF_TEXT, hMem)) {
 		GlobalFree(hMem);
 		CloseClipboard();
-		return;
+		return 4;
 	}
 	CloseClipboard();
-	return;
+	return 0;
 }
 #else
 void tcsys::_copy(string txt)//copy in android
@@ -529,7 +539,7 @@ tcsys::tcsys()
 	_config.is_exchanged = false;
 	_config.input_as_total = false;
 
-	_cpn = 0;
+	_select.pl_id = 0;
 	_ursp = 0;
 	_select = POOL{};
 	_pool = vector<POOL>{};
@@ -546,33 +556,45 @@ tcsys::~tcsys()
 
 
 
-void tcsys::newPerson(string const firstname, string const lastname, MONEY const rcv)
+int tcsys::newPerson(string const firstname, string const lastname, MONEY const rcv)
 {
 
 	person ps(IDENTITY(firstname, lastname));
 	//ps.receiveConstuit(rcv);
-	ps.participe(newEvent(rcv, "pre paid", "rcv for new person"));
+	if (rcv != 0)ps.participe(newEvent(rcv, "pre paid", "rcv for new person"));
 	_p().pspool.push_back(ps);
 	_registOne(ps);
 	return;
 }//finish
 
-void tcsys::selectPerson(string const firstname, string const lastname)
+int tcsys::selectPerson(string const firstname, string const lastname)
 {
 	bool already_selected = false;
+	bool success = false;
 	for (person& ps : _select.pspool) if (ps.getIdentity().first == firstname && ps.getIdentity().second == lastname)already_selected = true;;
-	if (already_selected)return;
-	for (person& ps : _p().pspool) if (ps.getIdentity().first == firstname && ps.getIdentity().second == lastname)_select.pspool.push_back(ps);
-	return;
+	if (already_selected)return 1;
+	for (person& ps : _p().pspool) if (ps.getIdentity().first == firstname && ps.getIdentity().second == lastname)
+	{
+		_select.pspool.push_back(ps);
+		success = true;
+	}
+	if (!success) return 2;
+	return 0;
 }//finish
 
-void tcsys::unSelectPerson(string const firstname, string const lastname)
+int tcsys::unSelectPerson(string const firstname, string const lastname)
 {
-	for (int i = 0; i < _select.pspool.size(); i++) if (_select.pspool[i].getIdentity().first == firstname && _select.pspool[i].getIdentity().second == lastname)_select.pspool.erase(_select.pspool.begin() + i);
-	return;
+	bool success = false;
+	for (int i = 0; i < _select.pspool.size(); i++) if (_select.pspool[i].getIdentity().first == firstname && _select.pspool[i].getIdentity().second == lastname)
+	{
+		_select.pspool.erase(_select.pspool.begin() + i);
+		success = true;
+	}
+	if (!success) return 1;
+	return 0;
 }//finish
 
-void tcsys::removePerson()
+int tcsys::removePerson()
 {
 	string firstname, lastname;
 	for (person& pss : _select.pspool)
@@ -583,23 +605,23 @@ void tcsys::removePerson()
 	}
 	_select.pspool.clear();
 	_registAll();
-	return;
+	return 0;
 }//finish
 
-void tcsys::unselectAll()
+int tcsys::unselectAll()
 {
 	_select.pspool.clear();
 	_select.blpool.clear();
-	return;
+	return 0;
 }//finish
 
-void tcsys::checkoutPerson()
+int tcsys::checkoutPerson()
 {
-
+	return 0;
 }
 
 
-void tcsys::copyPersonalBill()
+int tcsys::copyPersonalBill()
 {
 	string firstname, lastname, bills;
 	ID_LIST list;
@@ -627,7 +649,7 @@ void tcsys::copyPersonalBill()
 #ifdef DEBUG
 	cout << bills;
 #endif // DEBUG
-	return;
+	return 0;
 }//finish
 
 bill tcsys::newEvent(MONEY const amount, std::string const name, std::string const contest, bool single)
@@ -676,35 +698,35 @@ bill tcsys::newEvent(MONEY const amount, std::string const name, std::string con
 	return bl;
 }//finish
 
-void tcsys::selectAllEvent()
+int tcsys::selectAllEvent()
 {
 	_select.blpool.clear();
 	for (bill& bl : _p().blpool)_select.blpool.push_back(bl);
-	return;
+	return 0;
 }//finish
 
-void tcsys::selectOneEvent(ID const bl_id)
+int tcsys::selectOneEvent(ID const bl_id)
 {
 	bool already_selected = false;
 	for (bill& bl : _select.blpool) if (bl.getEventID() == bl_id) already_selected = true;
 	if (already_selected)return;
 	for (bill& bl : _p().blpool) if (bl.getEventID()==bl_id)_select.blpool.push_back(bl);
-	return;
+	return 0;
 }//finish
 
-void tcsys::unselectAllEvent()
+int tcsys::unselectAllEvent()
 {
 	_select.blpool.clear();
-	return;
+	return 0;
 }//finish
 
-void tcsys::unselectEvent(ID const bl_id)
+int tcsys::unselectEvent(ID const bl_id)
 {
 	for (int i = 0; i < _select.blpool.size(); i++) if (_select.blpool[i].getEventID() == bl_id)_select.blpool.erase(_select.blpool.begin() + i);
-	return;
+	return 0;
 }//finish
 
-void tcsys::deleteSelectedEvent()
+int tcsys::deleteSelectedEvent()
 {
 	ID bl_id;
 	for (int i = 0; i < _select.blpool.size(); i++)
@@ -722,10 +744,10 @@ void tcsys::deleteSelectedEvent()
 	}
 	_select.blpool.clear();
 	_registAll();
-	return;
+	return 0;
 }//finish
 
-void tcsys::newPool()//new/deletePool has two ways to achieve, sequence & random. in /**/ is random, and here use sequence.
+int tcsys::newPool()//new/deletePool has two ways to achieve, sequence & random. in /**/ is random, and here use sequence.
 {
 	POOL pl;
 	/*
@@ -745,10 +767,10 @@ void tcsys::newPool()//new/deletePool has two ways to achieve, sequence & random
 	_pool.push_back(pl);
 	unselectAll();
 	_registOne(pl.pl_id);
-	return;
+	return 0;
 }//finish
 
-void tcsys::deletePool(ID const pl_id)
+int tcsys::deletePool(ID const pl_id)
 {
 	/*
 	ID shift = 0;
@@ -758,33 +780,33 @@ void tcsys::deletePool(ID const pl_id)
 	*/
 	_pool.erase(_pool.begin() + pl_id);
 	for (POOL pl : _pool) if (pl.pl_id > pl_id) pl.pl_id -= 1;
-	if (_cpn > pl_id) _cpn -= 1;
+	if (_select.pl_id > pl_id) _select.pl_id -= 1;
 	unselectAll();
-	return;
+	return 0;
 }//finish
 
-void tcsys::switchPool(ID const pl_id)
+int tcsys::switchPool(ID const pl_id)
 {
 	_registOne(pl_id);
 	unselectAll();
-	return;
+	return 0;
 }//finish
 
-void tcsys::setExchangeRate(MONEY const rate)
+int tcsys::setExchangeRate(MONEY const rate)
 {
 	_config.exchange_rate = rate;
-	return;
+	return 0;
 }//finish
 
-void tcsys::exchange()
+int tcsys::exchange()
 {
 	for (POOL pl : _pool) for (bill bl : pl.blpool) bl.setAmount(bl.getAmount() * _config.exchange_rate);
 	_config.exchange_rate = 1 / _config.exchange_rate;
 	_config.is_exchanged = !_config.is_exchanged;
-	return;
+	return 0;
 }//finish
 
-void tcsys::setConfig(CONFIG_TYPE const ct, bool const target)
+int tcsys::setConfig(CONFIG_TYPE const ct, bool const target)
 //void tcsys::setConfig(int const ct, bool const target)
 {
 	switch (ct)
@@ -802,13 +824,13 @@ void tcsys::setConfig(CONFIG_TYPE const ct, bool const target)
 		break;
 	}
 	_saveConfig();
-	return;
+	return 0;
 }
 
-void tcsys::help()
+int tcsys::help()
 {
 	cout << HELP;
-	return;
+	return 0;
 }
 
 

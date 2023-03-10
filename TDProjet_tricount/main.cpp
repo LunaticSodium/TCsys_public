@@ -35,7 +35,10 @@ int main()
             std::getline(std::cin, firstname);
             std::cout << "Please enter the last name: ";
             std::getline(std::cin, lastname);
-            system.selectPerson(firstname, lastname);
+            int com = system.selectPerson(firstname, lastname);
+            if (com == 0) std::cout << "Select successful. ";
+            else if(com == 1) std::cout << "Select  ";
+            ;
         }
         else if (command == "unselect person")
         {
@@ -64,9 +67,10 @@ int main()
         else if (command == "new event")
         {
             MONEY amount;
-            std::string  name,content;
+            std::string  am,name,content;
             std::cout << "Please enter the amount: ";
-            std::cin >> amount;
+            std::getline(std::cin,am);
+            amount = stof(am);
             std::cout << "Please enter the name: ";
             std::getline(std::cin, name);
             std::cout << "Please enter the content: ";
@@ -76,8 +80,10 @@ int main()
         else if (command == "fast new event")
         {
             MONEY amount;
+            std::string am;
             std::cout << "Please enter the amount: ";
-            std::cin >> amount;
+            std::getline(std::cin, am);
+            amount = stof(am);
             system.newEvent(amount);
         }
         else if (command == "select all events")
