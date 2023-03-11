@@ -96,7 +96,7 @@ vector<string> tcsys::_read(ifstream& ifile)
 	while (std::getline(ifile, line)) {
 		if(!line.empty()) part.push_back(line);
 #ifdef DEBUG
-		cout << to_string(ifile.tellg()) << "pass\n";
+		std::cout << to_string(ifile.tellg()) << "pass\n";
 #endif // DEBUG
 		//if (!line.empty() && line != "end") {
 			//part_start_line = ifile.tellg();
@@ -105,7 +105,7 @@ vector<string> tcsys::_read(ifstream& ifile)
 		//if (part_start_line != -1){		
 			//part.push_back(line);
 #ifdef DEBUG
-			cout << line << "pass\n";
+		std::cout << line << "pass\n";
 #endif // DEBUG
 		//}
 		if (line == "end") break;
@@ -129,7 +129,7 @@ vector<vector<string>> tcsys::_readAll(string const file_name)
 #ifdef DEBUG
 	if (!ifile.is_open())
 	{
-		cout << "file " << file_name << " open failed\n";
+		std::cout << "file " << file_name << " open failed\n";
 		return parts;
 	}
 #endif // DEBUG
@@ -142,7 +142,7 @@ vector<vector<string>> tcsys::_readAll(string const file_name)
 	{
 		parts.push_back(_read(ifile));
 #ifdef DEBUG
-		cout << to_string(ifile.tellg()) << "pass\n" << to_string(end) << "pass\n";
+		std::cout << to_string(ifile.tellg()) << "pass\n" << to_string(end) << "pass\n";
 #endif // DEBUG
 	}
 #ifdef DEBUG
@@ -150,16 +150,16 @@ vector<vector<string>> tcsys::_readAll(string const file_name)
 	{
 		for (string st : vs)
 		{
-			cout << st << '\n';
+			std::cout << st << '\n';
 		}
-		cout << '\n';
+		std::cout << '\n';
 	}
 #endif // DEBUG
 	ifile.close();
 	return parts;
 }//finish
 
-int tcsys::_datafileToTcsys(vector<string> const part)
+const int tcsys::_datafileToTcsys(vector<string> const part)
 {
 	if (part.size() == 0)return 0;
 	int i = 0;
@@ -257,6 +257,7 @@ int tcsys::_datafileToTcsys(vector<string> const part)
 		case PART_TYPE::PL:
 		{
 			ID pl_id = stoi(part[i++]);
+			string name = part[i++];
 			bool existence = false;
 			for (POOL pl : _pool) if (pl.pl_id == pl_id) existence = true;
 			if (!existence)
@@ -270,12 +271,12 @@ int tcsys::_datafileToTcsys(vector<string> const part)
 		}
 		case PART_TYPE::DF:
 		{
-			cout << "key word " << part_type << " transfer failed\n";
+			std::cout << "key word " << part_type << " transfer failed\n";
 			break;
 		}
 		default:
 		{
-			cout << " enum switcher error : PART_TYPE\n";
+			std::cout << " enum switcher error : PART_TYPE\n";
 			return 1;
 			break;
 		}
@@ -296,8 +297,7 @@ int tcsys::_datafileToTcsys(vector<string> const part)
 }//finish
 
 
-
-int tcsys::_regist(bill const bl)//i wish i have a generic type but i dont. I have no power here
+const int tcsys::_regist(bill const bl)//i wish i have a generic type but i dont. I have no power here
 {
 	_file << "bill\n";
 	_file << bl.getEventID() << '\n';
@@ -307,9 +307,8 @@ int tcsys::_regist(bill const bl)//i wish i have a generic type but i dont. I ha
 	_file << bl.getContest() << '\n';
 	_file << "end\n\n";
 	return 0;
-}//finish
-
-int tcsys::_regist(person const ps)
+}
+const int tcsys::_regist(person const ps)
 {
 	_file << "person\n";
 	_file << ps.getIdentity().first << '\n';
@@ -325,18 +324,18 @@ int tcsys::_regist(person const ps)
 	_file << '\n';
 	_file << "end\n\n";
 	return 0;
-}//finish
-
-int tcsys::_regist(ID const pl_id)//will change the _cpn to pl_id
+}
+const int tcsys::_regist(ID const pl_id)//will change the _cpn to pl_id
 {
 	_file << "pool\n";
 	_file << pl_id << '\n';
+	_file << _pool[pl_id].pl_name << '\n';
 	_file << "end\n\n";
 	_select.pl_id = pl_id;
 	return 0;
-}//finish
+}
 
-int tcsys::_registOne()//without Type T ,genetic or <any>.type(), which is totally a overkill, we use function overload. 
+const int tcsys::_registOne()//without Type T ,genetic or <any>.type(), which is totally a overkill, we use function overload. 
 {
 	if (_file.is_open()) _file.close();
 	_file.open(DATA_FILE_NAME, ios::out | ios::app);
@@ -344,8 +343,7 @@ int tcsys::_registOne()//without Type T ,genetic or <any>.type(), which is total
 	_file.close();
 	return 0;
 }
-
-int tcsys::_registOne(bill const bl)
+const int tcsys::_registOne(bill const bl)
 {
 	if (_file.is_open()) _file.close();
 	_file.open(DATA_FILE_NAME, ios::out | ios::app);
@@ -353,26 +351,24 @@ int tcsys::_registOne(bill const bl)
 	_file.close();
 	return 0;
 }
-
-int tcsys::_registOne(person const ps)
+const int tcsys::_registOne(person const ps)
 {
 	if (_file.is_open()) _file.close();
 	_file.open(DATA_FILE_NAME, ios::out | ios::app);
 	_regist(ps);
 	_file.close();
-	return;
+	return 0;
 }
-
-int tcsys::_registOne(ID const pl_id)
+const int tcsys::_registOne(ID const pl_id)
 {
 	if (_file.is_open()) _file.close();
 	_file.open(DATA_FILE_NAME, ios::out | ios::app);
 	_regist(pl_id);
 	_file.close();
-	return;
+	return 0;
 }
 
-int tcsys::_registAll()
+const int tcsys::_registAll()
 {
 	ID cpn = _select.pl_id;
 	if (_file.is_open()) _file.close();
@@ -389,9 +385,9 @@ int tcsys::_registAll()
 }//finish
 
 #ifndef ANDROID_DEPLOY
-int tcsys::_copy(string txt)//copy in windows, rely on <Windows.h>
+const int tcsys::_copy(string txt)//copy in windows, rely on <Windows.h>
 {
-	if (!OpenClipboard(nullptr)) return;
+	if (!OpenClipboard(nullptr)) return 5;
 	if (!EmptyClipboard()) {
 		CloseClipboard();
 		return 1;
@@ -424,13 +420,13 @@ void tcsys::_copy(string txt)//copy in android
 }
 #endif // !ANDROID_DEPLOY
 
-int tcsys::_initTcsys()
+const int tcsys::_initTcsys()
 {
 #ifdef DEBUG
 	_file.open(DATA_FILE_NAME,ios::out | ios::app);
 	if (!_file.is_open())
 	{
-		cout << "datafile open failed\n";
+		std::cout << "datafile open failed\n";
 		return 1;
 	}
 	_file.close();
@@ -438,7 +434,7 @@ int tcsys::_initTcsys()
 	_file.open(CONFIG_FILE_NAME, ios::out | ios::app);
 	if (!_file.is_open())
 	{
-		cout << "configfile open failed\n";
+		std::cout << "configfile open failed\n";
 		return 2;
 	}
 	_file.close();
@@ -456,14 +452,14 @@ int tcsys::_initTcsys()
 	return 0;
 }
 
-int tcsys::_saveConfig()
+const int tcsys::_saveConfig()
 {
 	//if (_config_file.is_open()) _config_file.close();
 	_config_file.open(CONFIG_FILE_NAME, ios::out | ios::trunc);
 #ifdef DEBUG
 	if (!_config_file.is_open())
 	{
-		cout << "configfile open failed\n";
+		std::cout << "configfile open failed\n";
 		return 1;
 	}
 #endif // DEBUG
@@ -479,13 +475,13 @@ int tcsys::_saveConfig()
 	return 0;
 }//finish
 
-int tcsys::_loadConfig()
+const int tcsys::_loadConfig()
 {
 	vector<vector<string>> parts = _readAll(CONFIG_FILE_NAME);
 	if (parts.empty())
 	{
 #ifdef DEBUG
-		cout << "config file is empty\n";
+		std::cout << "config file is empty\n";
 #endif // DEBUG
 		_saveConfig();
 		vector<vector<string>> parts = _readAll(CONFIG_FILE_NAME);
@@ -523,7 +519,7 @@ int tcsys::_loadConfig()
 		}
 		else
 		{
-			cout << "config_line " << config_line << " transfer failed\n";
+			std::cout << "config_line " << config_line << " transfer failed\n";
 			//return 1;
 		}
 	}
@@ -546,8 +542,7 @@ tcsys::tcsys()
 	_undoredo = vector<POOL>{};
 	_personbase = PERSON_LIST{};
 	_initTcsys();
-}//finish
-
+}
 tcsys::~tcsys()
 {
 	_registAll();
@@ -555,8 +550,7 @@ tcsys::~tcsys()
 }//finish
 
 
-
-int tcsys::newPerson(string const firstname, string const lastname, MONEY const rcv)
+const int tcsys::newPerson(string const firstname, string const lastname, MONEY const rcv)
 {
 
 	person ps(IDENTITY(firstname, lastname));
@@ -564,10 +558,10 @@ int tcsys::newPerson(string const firstname, string const lastname, MONEY const 
 	if (rcv != 0)ps.participe(newEvent(rcv, "pre paid", "rcv for new person"));
 	_p().pspool.push_back(ps);
 	_registOne(ps);
-	return;
-}//finish
+	return 0;
+}
 
-int tcsys::selectPerson(string const firstname, string const lastname)
+const int tcsys::selectPerson(string const firstname, string const lastname)
 {
 	bool already_selected = false;
 	bool success = false;
@@ -580,9 +574,9 @@ int tcsys::selectPerson(string const firstname, string const lastname)
 	}
 	if (!success) return 2;
 	return 0;
-}//finish
+}
 
-int tcsys::unSelectPerson(string const firstname, string const lastname)
+const int tcsys::unSelectPerson(string const firstname, string const lastname)
 {
 	bool success = false;
 	for (int i = 0; i < _select.pspool.size(); i++) if (_select.pspool[i].getIdentity().first == firstname && _select.pspool[i].getIdentity().second == lastname)
@@ -592,9 +586,9 @@ int tcsys::unSelectPerson(string const firstname, string const lastname)
 	}
 	if (!success) return 1;
 	return 0;
-}//finish
+}
 
-int tcsys::removePerson()
+const int tcsys::removePerson()
 {
 	string firstname, lastname;
 	for (person& pss : _select.pspool)
@@ -606,22 +600,41 @@ int tcsys::removePerson()
 	_select.pspool.clear();
 	_registAll();
 	return 0;
-}//finish
+}
 
-int tcsys::unselectAll()
+const int tcsys::unselectAll()
 {
 	_select.pspool.clear();
 	_select.blpool.clear();
 	return 0;
-}//finish
+}
 
-int tcsys::checkoutPerson()
+const int tcsys::printPersonList()
 {
+	std::cout << "\n";
+	for (person ps : _p().pspool) std::cout << ps.getIdentity().first << ' ' << ps.getIdentity().second << '\n';
+	std::cout << "\n";
+	return 0;
+}
+
+const int tcsys::checkoutPerson()
+{
+	if (_select.pspool.empty()) return 1;
+	else for (person ps : _select.pspool)
+	{
+		ID_LIST idl = ps.getBills();
+		int success = 0;
+		for (int id : idl)
+		{
+			 success += ps.deParticipe(id);
+		}
+		if (success != 0) return 1;
+	}
 	return 0;
 }
 
 
-int tcsys::copyPersonalBill()
+const int tcsys::copyPersonalBill()
 {
 	string firstname, lastname, bills;
 	ID_LIST list;
@@ -641,18 +654,18 @@ int tcsys::copyPersonalBill()
 			}*/
 			bills += "capital total : " + to_string(ps.getCapital(_p().blpool)) + '\n';
 #ifdef DEBUG
-			cout << to_string(ps.getCapital(_p().blpool));
+			std::cout << to_string(ps.getCapital(_p().blpool));
 #endif // DEBUG
 		}
 	}
 	_copy(bills);
 #ifdef DEBUG
-	cout << bills;
+	std::cout << bills;
 #endif // DEBUG
 	return 0;
-}//finish
+}
 
-bill tcsys::newEvent(MONEY const amount, std::string const name, std::string const contest, bool single)
+const int tcsys::newEvent(MONEY const amount, std::string const name, std::string const contest, bool single)
 {
 	const int num_selected = _select.pspool.size();
 	ID bl_id = 0;
@@ -677,10 +690,11 @@ bill tcsys::newEvent(MONEY const amount, std::string const name, std::string con
 			break;
 		}
 	}
+	
+	const int num_unselected = _p().pspool.size() - num_selected;
 
-	if (_config.bill_generate_as_pair && !single)
+	if (_config.bill_generate_as_pair && !single && num_unselected > 0)
 	{
-		const int num_unselected = _p().pspool.size() - num_selected;
 		bill blc = bill::generateEventCounter(_p().blpool, bl, num_selected, num_unselected);
 		_p().blpool.push_back(blc);
 		_registOne(blc);
@@ -695,38 +709,38 @@ bill tcsys::newEvent(MONEY const amount, std::string const name, std::string con
 		}
 	}
 	unselectAll();
-	return bl;
-}//finish
+	return 0;
+}
 
-int tcsys::selectAllEvent()
+const int tcsys::selectAllEvent()
 {
 	_select.blpool.clear();
 	for (bill& bl : _p().blpool)_select.blpool.push_back(bl);
 	return 0;
 }//finish
 
-int tcsys::selectOneEvent(ID const bl_id)
+const int tcsys::selectOneEvent(ID const bl_id)
 {
 	bool already_selected = false;
 	for (bill& bl : _select.blpool) if (bl.getEventID() == bl_id) already_selected = true;
-	if (already_selected)return;
+	if (already_selected)return 1;
 	for (bill& bl : _p().blpool) if (bl.getEventID()==bl_id)_select.blpool.push_back(bl);
 	return 0;
 }//finish
 
-int tcsys::unselectAllEvent()
+const int tcsys::unselectAllEvent()
 {
 	_select.blpool.clear();
 	return 0;
 }//finish
 
-int tcsys::unselectEvent(ID const bl_id)
+const int tcsys::unselectEvent(ID const bl_id)
 {
 	for (int i = 0; i < _select.blpool.size(); i++) if (_select.blpool[i].getEventID() == bl_id)_select.blpool.erase(_select.blpool.begin() + i);
 	return 0;
 }//finish
 
-int tcsys::deleteSelectedEvent()
+const int tcsys::deleteSelectedEvent()
 {
 	ID bl_id;
 	for (int i = 0; i < _select.blpool.size(); i++)
@@ -747,7 +761,7 @@ int tcsys::deleteSelectedEvent()
 	return 0;
 }//finish
 
-int tcsys::newPool()//new/deletePool has two ways to achieve, sequence & random. in /**/ is random, and here use sequence.
+const int tcsys::newPool()//new/deletePool has two ways to achieve, sequence & random. in /**/ is random, and here use sequence.
 {
 	POOL pl;
 	/*
@@ -769,8 +783,7 @@ int tcsys::newPool()//new/deletePool has two ways to achieve, sequence & random.
 	_registOne(pl.pl_id);
 	return 0;
 }//finish
-
-int tcsys::deletePool(ID const pl_id)
+const int tcsys::deletePool(ID const pl_id)
 {
 	/*
 	ID shift = 0;
@@ -783,22 +796,26 @@ int tcsys::deletePool(ID const pl_id)
 	if (_select.pl_id > pl_id) _select.pl_id -= 1;
 	unselectAll();
 	return 0;
-}//finish
-
-int tcsys::switchPool(ID const pl_id)
+}
+const int tcsys::namerPool(string name)
+{
+	_p().pl_name = name;
+	return 0;
+}
+const int tcsys::switchPool(ID const pl_id)
 {
 	_registOne(pl_id);
 	unselectAll();
 	return 0;
 }//finish
 
-int tcsys::setExchangeRate(MONEY const rate)
+const int tcsys::setExchangeRate(MONEY const rate)
 {
 	_config.exchange_rate = rate;
 	return 0;
 }//finish
 
-int tcsys::exchange()
+const int tcsys::exchange()
 {
 	for (POOL pl : _pool) for (bill bl : pl.blpool) bl.setAmount(bl.getAmount() * _config.exchange_rate);
 	_config.exchange_rate = 1 / _config.exchange_rate;
@@ -806,7 +823,7 @@ int tcsys::exchange()
 	return 0;
 }//finish
 
-int tcsys::setConfig(CONFIG_TYPE const ct, bool const target)
+const int tcsys::setConfig(CONFIG_TYPE const ct, bool const target)
 //void tcsys::setConfig(int const ct, bool const target)
 {
 	switch (ct)
@@ -819,7 +836,7 @@ int tcsys::setConfig(CONFIG_TYPE const ct, bool const target)
 		break;
 	default:
 #ifdef DEBUG
-		cout << " enum switcher error : CONFIG_TYPE\n";
+		std::cout << " enum switcher error : CONFIG_TYPE\n";
 #endif // DEBUG
 		break;
 	}
@@ -827,9 +844,9 @@ int tcsys::setConfig(CONFIG_TYPE const ct, bool const target)
 	return 0;
 }
 
-int tcsys::help()
+const int tcsys::help()
 {
-	cout << HELP;
+	std::cout << HELP;
 	return 0;
 }
 

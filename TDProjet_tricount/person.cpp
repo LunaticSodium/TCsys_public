@@ -38,6 +38,19 @@ void person::participe(const ID bl_id)
 	return;
 }
 
+int person::deParticipe(const ID bl_id)
+{
+	bool existence = false;
+	for (ID i = 0; i < _events.size(); i++) if (_events[i] == bl_id)
+	{
+		existence = true;
+		_events.erase(_events.begin() + i);
+		break;
+	}
+	if (!existence) return 1;
+	return 0;
+}
+
 std::string person::printBill(const BILL_LIST bllist) const
 {
 	std::string prt;

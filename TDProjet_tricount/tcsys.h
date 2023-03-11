@@ -8,6 +8,7 @@
 "unselect person : unselects a person by their first and last name.\n"\
 "remove person : removes the selected person from the pool.\n"\
 "checkout person : calculates the total amount owed by the selected persons and prints it out.\n"\
+"print person list : print a list of all persons in current pool.\n"\
 "copy personal bill : copies the bills of the selected persons to the clipboard.\n"\
 "new event : creates a new event with the input parameters being the amount, name, and contest associated with the event.\n"\
 "fast new event : creates a new event with only the amount"\
@@ -61,11 +62,11 @@ using namespace std;
 
 struct POOL {
     ID pl_id{};
+    string pl_name{};
     PERSON_LIST pspool{};
     BILL_LIST blpool{};
     POOL() {}
 };
-
 enum PART_TYPE {DF,BL,PS,PL};                        //as default, bill, person, pool; to help function _datafileToTcsys() compilable in case of c++ 14 or former
 
 struct CONFIG {
@@ -75,7 +76,6 @@ struct CONFIG {
     bool bill_generate_as_pair{};                     //trun if when generate one bill, always to generate one opposite to maintain the sum as zero
     CONFIG() {}
 };
-
 enum CONFIG_TYPE {IAT,BGAP};
 
 class tcsys /* :
@@ -102,25 +102,25 @@ private:
                                                     //NOT all of these function geste the get/set point of _file, and _file.open is often in different mode
                                                     //make SURE that use always readALL() outside of itself 
 
-    int _datafileToTcsys(vector<string> const part);            //convert a part start with classname/typename and end with "end" into _pool
+    const int _datafileToTcsys(vector<string> const part);            //convert a part start with classname/typename and end with "end" into _pool
 
-    int _regist(void) { return; };	                //convert a member into part. regist the change of system into file in current get point.
-    int _regist(bill const bl);
-    int _regist(person const ps);
-    int _regist(ID const pl_id);                   //also change _cpn at the last, same as readAll
+    const int _regist(void) { return 0; };	                //convert a member into part. regist the change of system into file in current get point.
+    const int _regist(bill const bl);
+    const int _regist(person const ps);
+    const int _regist(ID const pl_id);                   //also change _cpn at the last, same as readAll
 
-    int _registOne(void);                          //_regist can only be used by _rOne and _rAll, because they dont have _file.open() so they dont know it's ios in or out.
-    int _registOne(bill const bl);
-    int _registOne(person const ps);
-    int _registOne(ID const pl_id);                //only _rO(ID) will change _cpn in all registO/A function.
-    int _registAll();                              //rOne() like push_back, it add a new part in the LAST of file. rAll overwrite the whole file.
+    const int _registOne(void);                          //_regist can only be used by _rOne and _rAll, because they dont have _file.open() so they dont know it's ios in or out.
+    const int _registOne(bill const bl);
+    const int _registOne(person const ps);
+    const int _registOne(ID const pl_id);                //only _rO(ID) will change _cpn in all registO/A function.
+    const int _registAll();                              //rOne() like push_back, it add a new part in the LAST of file. rAll overwrite the whole file.
     //void virtual _refresh()=0;                      //used to be the name of rereadall, well it suppose to be a function only calling a physic engine's refresh function
 
-    int _initTcsys();                               //initiale the system by importing the file(str) as datapool(LIST). rely on _readAll() so also _read() and _datafileToTcsys()
+    const int _initTcsys();                               //initiale the system by importing the file(str) as datapool(LIST). rely on _readAll() so also _read() and _datafileToTcsys()
 
-    int _saveConfig();
-    int _loadConfig();
-    int _copy(string const txt);                   //copy a text
+    const int _saveConfig();
+    const int _loadConfig();
+    const int _copy(string const txt);                   //copy a text
 
     //streampos _locatepersonidlist(ID pl_id, IDENTITY idtt);
 
@@ -131,46 +131,48 @@ public:
     //desorla, down-below here, for safety reason, unless you just drinked a coffee and you know what you are doing,
     //these user-level functions shall use only these _f inbetween all private functions : _readAll(), _registOne(any) and _registAll()  ...  maybe also _refresh()
 
-    int newPerson(string const firstname, string const lastname, MONEY const rcv = 0);//in current pool
+    const int newPerson(string const firstname, string const lastname, MONEY const rcv = 0);//in current pool
     //void addPerson(ID id);
-    int selectPerson(string const firstname, string const lastname);
+    const int selectPerson(string const firstname, string const lastname);
 
-    int unSelectPerson(string const firstname, string const lastname);
-    int removePerson();
+    const int unSelectPerson(string const firstname, string const lastname);
+    const int removePerson();
     //void deleteSelectedPerson(ID id);
 
-    int unselectAll();
-    int checkoutPerson();
-    int copyPersonalBill();//copy *selected* persons' bills
+    const int unselectAll();
+    const int printPersonList();
+    const int checkoutPerson();
+    const int copyPersonalBill();//copy *selected* persons' bills
 
 
 
     //Event listed in pool and templist, no database. Class event is renamed as bill because it's actually a key word.
 
-    bill newEvent(MONEY const amount = 0, string const name = "\n", string const contest = "\n", bool single = false);
+    const int newEvent(MONEY const amount = 0, string const name = "\n", string const contest = "\n", bool single = false);
     //void newEvent(string const amount, string const name = "\n", string const contest = "\n") { newEvent(stof(amount), name, contest); return; };
     //void fastNewEventPair(MONEY const amount);
 
-    int selectAllEvent();
-    int selectOneEvent(ID const bl_id);
+    const int selectAllEvent();
+    const int selectOneEvent(ID const bl_id);
 
-    int unselectAllEvent();
-    int unselectEvent(ID const bl_id);
-    int deleteSelectedEvent();
+    const int unselectAllEvent();
+    const int unselectEvent(ID const bl_id);
+    const int deleteSelectedEvent();
 
 
     //Other system function.
-    int newPool();
-    int deletePool(ID const pl_id);
-    int switchPool(ID const pl_id);
+    const int newPool();
+    const int deletePool(ID const pl_id);
+    const int namerPool(string name);
+    const int switchPool(ID const pl_id);
 
-    int setExchangeRate(MONEY const rate);
+    const int setExchangeRate(MONEY const rate);
     //MONEY getExchangeRate() { return exchange_rate; };
-    int exchange();
+    const int exchange();
     //void reverseExchange();
 
-    int setConfig(CONFIG_TYPE const ct, bool const target);
-    int setConfig(int const ct, bool const target) { setConfig(bit_cast<CONFIG_TYPE,int>(ct), target); return; }
+    const int setConfig(CONFIG_TYPE const ct, bool const target);
+    const int setConfig(int const ct, bool const target) { setConfig(bit_cast<CONFIG_TYPE,int>(ct), target); return 0; }
 
     //void openConfigPage();
     //void openMainPage();
@@ -180,6 +182,6 @@ public:
     //void undo();
     //void redo();
 
-    int help();
+    const int help();
 };
 

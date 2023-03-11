@@ -26,7 +26,9 @@ int main()
             std::getline(std::cin, firstname);
             std::cout << "Please enter the last name: ";
             std::getline(std::cin, lastname);
-            system.newPerson(firstname, lastname);
+            const int com = system.newPerson(firstname, lastname);
+            if (com == 0) std::cout << "Operation successed. ";
+            else std::cout << "Operation failed. ";
         }
         else if (command == "select person")
         {
@@ -35,10 +37,17 @@ int main()
             std::getline(std::cin, firstname);
             std::cout << "Please enter the last name: ";
             std::getline(std::cin, lastname);
-            int com = system.selectPerson(firstname, lastname);
-            if (com == 0) std::cout << "Select successful. ";
-            else if(com == 1) std::cout << "Select  ";
+            const int com = system.selectPerson(firstname, lastname);
+            if (com == 0) std::cout << "Select successed. ";
+            else if (com == 1) std::cout << "Already selected. Use unselect person to unselect. ";
+            else if (com == 2) std::cout << "No such person found. Use print person list to check. ";
             ;
+        }
+        else if (command == "print person list")
+        {
+            std::cout << "Person list down below : ";
+            const int com = system.printPersonList();
+            if (com == 0) std::cout << "Person list end. ";
         }
         else if (command == "unselect person")
         {
@@ -47,19 +56,27 @@ int main()
             std::getline(std::cin, firstname);
             std::cout << "Please enter the last name: ";
             std::getline(std::cin, lastname);
-            system.unSelectPerson(firstname, lastname);
+            const int com = system.unSelectPerson(firstname, lastname);
+            if (com == 0) std::cout << "Operation successed. ";
+            else std::cout << "Operation failed. ";
         }
         else if (command == "remove person")
         {
-            system.removePerson();
+            const int com = system.removePerson();
+            if (com == 0) std::cout << "Operation successed. ";
+            else std::cout << "Operation failed. ";
         }
         else if (command == "checkout person")
         {
-            system.checkoutPerson();
+            const int com = system.checkoutPerson();
+            if (com == 0) std::cout << "Checkout successed. ";
+            else if (com == 1) std::cout << "No person selected yet. ";
         }
         else if (command == "copy personal bill")
         {
-            system.copyPersonalBill();
+            const int com = system.copyPersonalBill();
+            if (com == 0) std::cout << "Copy successed. ";
+            else std::cout << "Copy failed, error code " << com ;
         }
 
 
@@ -75,7 +92,9 @@ int main()
             std::getline(std::cin, name);
             std::cout << "Please enter the content: ";
             std::getline(std::cin, content);
-            system.newEvent(amount,name,content);
+            const int com = system.newEvent(amount,name,content);
+            if (com == 0) std::cout << "Operation successed. ";
+            else std::cout << "Operation failed. ";
         }
         else if (command == "fast new event")
         {
