@@ -1,5 +1,6 @@
 #include <cstdio>
 #include "tcsys.h"
+#include "undoredo.h"
 
 int main()
 {
