@@ -140,6 +140,7 @@
     <ClInclude Include="reaction.h" />
     <ClInclude Include="tcsys.h" />
     <ClInclude Include="tdprojet-tricount.h" />
+    <ClInclude Include="undoredo.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="bill.cpp" />
@@ -149,6 +150,7 @@
     <ClCompile Include="tcsys.cpp">
       <LanguageStandard Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">stdcpp20</LanguageStandard>
     </ClCompile>
+    <ClCompile Include="undoredo.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
