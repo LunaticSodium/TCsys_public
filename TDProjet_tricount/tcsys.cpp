@@ -282,7 +282,7 @@ const int tcsys::_datafileToTcsys(vector<string> const part)
 			break;
 		}
 	}
-	if (i < part.size() - 2)
+	if (i < part.size() - 1)
 	{
 		while (part[i].empty() && i < part.size() - 1 && part.size()>1) i++;
 
