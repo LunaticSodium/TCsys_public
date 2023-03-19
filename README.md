@@ -1,5 +1,6 @@
 # TCsys_public
-the public ver of tcsys. The last stable version is a1.03.
+The public ver of tcsys. The last stable version is a1.03. You shall find it in branch alpha.
+Actually all source code is in alpha, this main is for read.
 
 For help, it's compiled by VS and I left the sln in the realise.
 It should be fine if compiled by other ODE but better to use at least c++ 14.
