@@ -1,6 +1,11 @@
 #pragma once
-//#include "tdprojet-tricount.h"
+
+#ifndef CAPITAL_IGNORE                              //this define cancel the capital member of class person, to simplify the protocode
+#define CAPITAL_IGNORE                             
+#endif
+
 #include "bill.h"
+//#include "tdprojet-tricount.h"
 
 class person
 {

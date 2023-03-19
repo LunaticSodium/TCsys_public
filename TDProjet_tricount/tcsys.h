@@ -19,11 +19,14 @@
 "delete selected event : deletes all selected events.\n"\
 "unselect all : unselects all currently selected persons.\n"\
 "new pool : creates a new pool.\n"\
+"change pool name : change one pool's name.\n"\
 "delete pool : deletes a pool by its ID.\n"\
 "switch pool : switches to a different pool by its ID.\n"\
 "set exchange rate : sets the exchange rate between two currencies.\n"\
 "exchange : converts all amounts in the current pool from one currency to another using the exchange rate.\n"\
 "set config : sets a configuration option to a specific value.\n"\
+"undo : cancel the last move.\n"\
+"redo : redo the move that is canceled.\n"\
 "help : displays help information about the system.\n"\
 "exit : exit tcsys.\n"
 #endif // !HELP
@@ -43,10 +46,6 @@
 #define DEBUG
 #endif
 
-#ifndef CAPITAL_IGNORE                              //put before include. this define cancel the capital member of class person, to simplify the protocode
-#define CAPITAL_IGNORE                             
-#endif
-
 #ifndef ANDROID_DEPLOY
 #include <Windows.h>
 #else
@@ -62,10 +61,10 @@ using namespace std;
 
 struct POOL {
     ID pl_id{};
-    string pl_name{};
+    string pl_name {};
     PERSON_LIST pspool{};
     BILL_LIST blpool{};
-    POOL() {}
+    POOL() { pl_name = "default pool"; }
 };
 enum PART_TYPE {DF,BL,PS,PL};                        //as default, bill, person, pool; to help function _datafileToTcsys() compilable in case of c++ 14 or former
 
@@ -87,11 +86,12 @@ private:
     POOL _select;                                   //include which have been selected temperely
     vector<POOL> _pool,_undoredo;
     ID _ursp;                                  //current pool number and undo-redo stack position
+    CONFIG _config;
+
     fstream _file;                                  //no caplock plz, all in mini. notice that the get & set point of file is, in fact, as global. make sure it's well defined in beginning
     fstream _config_file;
     POOL& _p() { return _pool[_select.pl_id]; };
 
-    CONFIG _config;
 
     //streampos _end();                             return the current end streampos without changing the current get point. while you should have a fixed end in beginning of any function which may use this multiple times
                                                     //while the reason why there isnt "const" is, it use a temp variant to regist the get point, so it's not const actually
@@ -116,7 +116,6 @@ private:
     const int _registAll();                              //rOne() like push_back, it add a new part in the LAST of file. rAll overwrite the whole file.
     //void virtual _refresh()=0;                      //used to be the name of rereadall, well it suppose to be a function only calling a physic engine's refresh function
 
-    const int _initTcsys();                               //initiale the system by importing the file(str) as datapool(LIST). rely on _readAll() so also _read() and _datafileToTcsys()
 
     const int _saveConfig();
     const int _loadConfig();
@@ -127,6 +126,8 @@ private:
 public:                                             
     tcsys();
     ~tcsys();
+
+    const int initTcsys();                               //initiale the system by importing the file(str) as datapool(LIST). rely on _readAll() so also _read() and _datafileToTcsys()
 
     //desorla, down-below here, for safety reason, unless you just drinked a coffee and you know what you are doing,
     //these user-level functions shall use only these _f inbetween all private functions : _readAll(), _registOne(any) and _registAll()  ...  maybe also _refresh()
@@ -142,8 +143,8 @@ public:
     const int unselectAll();
     const int printPersonList();
     const int checkoutPerson();
-    const int copyPersonalBill();//copy *selected* persons' bills
-
+    const int copyPersonalBill();//copy *selected* persons' bills. not working. 
+    const int printPersonalBill();
 
 
     //Event listed in pool and templist, no database. Class event is renamed as bill because it's actually a key word.
@@ -151,7 +152,7 @@ public:
     const int newEvent(MONEY const amount = 0, string const name = "\n", string const contest = "\n", bool single = false);
     //void newEvent(string const amount, string const name = "\n", string const contest = "\n") { newEvent(stof(amount), name, contest); return; };
     //void fastNewEventPair(MONEY const amount);
-
+    const int changePoolName(string const name) { _p().pl_name = name; return 0; };
     const int selectAllEvent();
     const int selectOneEvent(ID const bl_id);
 
@@ -162,6 +163,7 @@ public:
 
     //Other system function.
     const int newPool();
+    const string getPoolName(ID const pl_id) { if (pl_id < _pool.size()) return _pool[pl_id].pl_name; else return "error"; };
     const int deletePool(ID const pl_id);
     const int namerPool(string name);
     const int switchPool(ID const pl_id);
@@ -174,6 +176,7 @@ public:
     const int setConfig(CONFIG_TYPE const ct, bool const target);
     const int setConfig(int const ct, bool const target) { setConfig(bit_cast<CONFIG_TYPE,int>(ct), target); return 0; }
 
+    tcsys& operator=(const tcsys& tc1);
     //void openConfigPage();
     //void openMainPage();
     //void openEventPage();

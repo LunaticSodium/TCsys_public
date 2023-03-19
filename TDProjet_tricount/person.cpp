@@ -53,7 +53,7 @@ int person::deParticipe(const ID bl_id)
 
 std::string person::printBill(const BILL_LIST bllist) const
 {
-	std::string prt;
+	std::string prt{};
 	BILL_LIST bl_list;
 	for (bill bl : bllist) for (int id : _events) if (bl.getEventID() == id) prt += bl.selfPrint();
 	return prt;

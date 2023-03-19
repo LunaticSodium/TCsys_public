@@ -264,6 +264,7 @@ const int tcsys::_datafileToTcsys(vector<string> const part)
 			{
 				POOL new_pool;
 				new_pool.pl_id = pl_id;
+				new_pool.pl_name = name;
 				_pool.push_back(new_pool);
 			}
 			_select.pl_id = pl_id;
@@ -281,17 +282,20 @@ const int tcsys::_datafileToTcsys(vector<string> const part)
 			break;
 		}
 	}
-	while (part[i].empty() && i < part.size() - 1 && part.size()>1) i++;
-
-	streampos g_current = _file.tellg();
-	_file.seekg(0, ios::end);
-	streampos end = _file.tellg();
-	_file.seekg(g_current);
-
-	if (part[i] != "end" && _file.tellg()<end)
+	if (i < part.size() - 2)
 	{
-		vector<string> nextpart(part.begin() + i, part.end());
-		_datafileToTcsys(nextpart);
+		while (part[i].empty() && i < part.size() - 1 && part.size()>1) i++;
+
+		streampos g_current = _file.tellg();
+		_file.seekg(0, ios::end);
+		streampos end = _file.tellg();
+		_file.seekg(g_current);
+
+		if (part[i] != "end" && _file.tellg()<end)
+		{
+			vector<string> nextpart(part.begin() + i, part.end());
+			_datafileToTcsys(nextpart);
+		}
 	}
 	return 0;
 }//finish
@@ -420,7 +424,7 @@ void tcsys::_copy(string txt)//copy in android
 }
 #endif // !ANDROID_DEPLOY
 
-const int tcsys::_initTcsys()
+const int tcsys::initTcsys()
 {
 #ifdef DEBUG
 	_file.open(DATA_FILE_NAME,ios::out | ios::app);
@@ -445,9 +449,10 @@ const int tcsys::_initTcsys()
 	{
 		POOL pl;
 		pl.pl_id = 0;
+		_pool.push_back(pl);
 		_registOne(pl.pl_id);
 	}
-	for (int i = 0; i < parts.size(); i++) _datafileToTcsys(parts[i]);
+	for (int i = 0; i < parts.size(); i++) if(!parts[i].empty()) _datafileToTcsys(parts[i]);
 	_loadConfig();
 	return 0;
 }
@@ -484,6 +489,7 @@ const int tcsys::_loadConfig()
 		std::cout << "config file is empty\n";
 #endif // DEBUG
 		_saveConfig();
+		return 0;
 		vector<vector<string>> parts = _readAll(CONFIG_FILE_NAME);
 	}
 	vector<string> config_part = parts.back();
@@ -537,11 +543,12 @@ tcsys::tcsys()
 
 	_select.pl_id = 0;
 	_ursp = 0;
+	/*
 	_select = POOL{};
 	_pool = vector<POOL>{};
 	_undoredo = vector<POOL>{};
 	_personbase = PERSON_LIST{};
-	_initTcsys();
+	*/
 }
 tcsys::~tcsys()
 {
@@ -636,6 +643,7 @@ const int tcsys::checkoutPerson()
 
 const int tcsys::copyPersonalBill()
 {
+	if (_select.pspool.empty()) return 1;
 	string firstname, lastname, bills;
 	ID_LIST list;
 	for (person& ps : _select.pspool)
@@ -652,7 +660,8 @@ const int tcsys::copyPersonalBill()
 			{
 
 			}*/
-			bills += "capital total : " + to_string(ps.getCapital(_p().blpool)) + '\n';
+			MONEY mn = ps.getCapital(_p().blpool);
+			if (mn != 0) bills += "capital total : " + to_string(mn) + '\n';
 #ifdef DEBUG
 			std::cout << to_string(ps.getCapital(_p().blpool));
 #endif // DEBUG
@@ -662,6 +671,33 @@ const int tcsys::copyPersonalBill()
 #ifdef DEBUG
 	std::cout << bills;
 #endif // DEBUG
+	return 0;
+}
+
+const int tcsys::printPersonalBill()
+{
+	if (_select.pspool.empty()) return 1;
+	string firstname, lastname, bills;
+	ID_LIST list;
+	for (person& ps : _select.pspool)
+	{
+		firstname = ps.getIdentity().first;
+		lastname = ps.getIdentity().second;
+		for (person& ps : _p().pspool) if (ps.getIdentity().first == firstname && ps.getIdentity().second == lastname)
+		{
+			bills += ps.getIdentity().first + ' ' + ps.getIdentity().second + '\n';
+			bills += ps.printBill(_p().blpool);
+			/*
+			list = ps.getBills();
+			for (ID bl_id : list)
+			{
+
+			}*/
+			MONEY mn = ps.getCapital(_p().blpool);
+			if (mn != 0) bills += "capital total : " + to_string(mn) + '\n';
+		}
+	}
+	cout << bills;
 	return 0;
 }
 
@@ -708,7 +744,9 @@ const int tcsys::newEvent(MONEY const amount, std::string const name, std::strin
 			if (!selected) psp.participe(blc);
 		}
 	}
+
 	unselectAll();
+	_registAll();
 	return 0;
 }
 
@@ -842,6 +880,18 @@ const int tcsys::setConfig(CONFIG_TYPE const ct, bool const target)
 	}
 	_saveConfig();
 	return 0;
+}
+
+tcsys& tcsys::operator=(const tcsys& target)
+{
+	if (this == &target) return *this;
+	_personbase=target._personbase;
+	_select=target._select;
+	_pool = target._pool;
+	_undoredo = target._undoredo;
+	_ursp = target._ursp;
+	_config = target._config;
+	return *this;
 }
 
 const int tcsys::help()

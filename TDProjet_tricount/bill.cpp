@@ -53,6 +53,7 @@ std::string bill::selfPrint()
 		str = "\nno. " + std::to_string(_id) + "   " + _name + " cost " + std::to_string(-1 * getReceive()) + "\ncontest : " + _contest;
 	else
 		str = "\nno. " + std::to_string(_id) + "   " + _name + " gain " + std::to_string(getReceive()) + "\ncontest : " + _contest;
+	str += "\n";
 	return str;
 }
 

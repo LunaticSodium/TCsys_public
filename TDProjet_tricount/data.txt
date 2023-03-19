@@ -1,22 +1,48 @@
 pool
 0
+default pool
 end
 
 person
-Scott
-Alex
- 
+Roi
+Roby
+ 2 3 
 end
 
 bill
 0
 185
-Visa fee
+Visa
 0
-fee of visa canadian
+end
+end
+
+bill
+1
+185
+Pasta
+0
+nope.
+end
+
+bill
+2
+320
+rent
+0
+nx
+end
+
+bill
+3
+-50
+profit
+0
+action
 end
 
 pool
 0
+default pool
 end
 
