@@ -96,7 +96,7 @@ vector<string> tcsys::_read(ifstream& ifile)
 	while (std::getline(ifile, line)) {
 		if(!line.empty()) part.push_back(line);
 #ifdef DEBUG
-		std::cout << to_string(ifile.tellg()) << "pass\n";
+		std::cout << to_string(ifile.tellg()) << "\n";
 #endif // DEBUG
 		//if (!line.empty() && line != "end") {
 			//part_start_line = ifile.tellg();
@@ -105,7 +105,7 @@ vector<string> tcsys::_read(ifstream& ifile)
 		//if (part_start_line != -1){		
 			//part.push_back(line);
 #ifdef DEBUG
-		std::cout << line << "pass\n";
+		std::cout << line << "\n";
 #endif // DEBUG
 		//}
 		if (line == "end") break;
@@ -116,7 +116,7 @@ vector<string> tcsys::_read(ifstream& ifile)
 		if (ifile.tellg() == -1) break;
 	}
 #ifdef DEBUG
-	//cout << line << "pass\n";
+	//cout << line << "\n";
 #endif // DEBUG
 	return part;
 }//finish
@@ -142,7 +142,7 @@ vector<vector<string>> tcsys::_readAll(string const file_name)
 	{
 		parts.push_back(_read(ifile));
 #ifdef DEBUG
-		std::cout << to_string(ifile.tellg()) << "pass\n" << to_string(end) << "pass\n";
+		std::cout << to_string(ifile.tellg()) << "\n" << to_string(end) << "\n";
 #endif // DEBUG
 	}
 #ifdef DEBUG
@@ -552,9 +552,15 @@ tcsys::tcsys()
 }
 tcsys::~tcsys()
 {
+
+}
+const int tcsys::save()
+{
 	_registAll();
 	_file.close();
-}//finish
+	return 0;
+}
+//finish
 
 
 const int tcsys::newPerson(string const firstname, string const lastname, MONEY const rcv)

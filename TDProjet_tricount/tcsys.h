@@ -126,6 +126,7 @@ private:
 public:                                             
     tcsys();
     ~tcsys();
+    const int save();
 
     const int initTcsys();                               //initiale the system by importing the file(str) as datapool(LIST). rely on _readAll() so also _read() and _datafileToTcsys()
 

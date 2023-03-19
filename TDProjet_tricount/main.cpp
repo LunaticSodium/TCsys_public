@@ -264,6 +264,7 @@ int main()
         else
         {
             std::cout << "Invalid command. \n";
+            tcsystem.save();
             continue;
         }
 
