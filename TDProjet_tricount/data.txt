@@ -3,3 +3,58 @@ pool
 default pool
 end
 
+person
+Alex
+Blanc
+ 1 2 
+end
+
+person
+Bruno
+Blanc
+ 
+end
+
+person
+Julia
+Blanc
+ 0
+end
+
+person
+Loic
+Blanc
+ 
+end
+
+bill
+0
+64
+Auto
+0
+16eu par person
+end
+
+bill
+1
+13
+Picnic
+0
+3,25 par person
+end
+
+bill
+2
+102
+Hotel
+0
+25,67 par person Alex : prout?
+end
+
+pool
+0
+default pool
+end
+
+end
+

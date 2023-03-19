@@ -1,84 +1,6 @@
 #include "tcsys.h"
 
 /*
-File example :
-
-pool
-1
-end
-
-bill
-1
-20
-dinner
-false
-just a dinner
-end
-
-bill
-2
-20
-dinner
-true
-as a counter of dinner
-end
-
-bill
-3
-40
-lunch
-false
-meals
-end
-
-person
-Alexander
-Robinson
-150
-1 3 5 7 10
-end
-
-
-or the same it would work:
-
-
-pool
-1
-
-bill
-1
-20
-dinner
-false
-just a dinner
-
-
-
-
-bill
-2
-20
-dinner
-true
-as a counter of dinner
-
-bill
-3
-40
-lunch
-false
-meals
-person
-Alexander
-Robinson
-150
-1 3 5 7 10
-end
-
-use \end as a \} which doesn't need a \{
-*/
-
-/*
 streampos tcsys::_end()
 {
 	streampos g_current = _file.tellg();
@@ -232,7 +154,9 @@ const int tcsys::_datafileToTcsys(vector<string> const part)
 		}
 		case PART_TYPE::PS:
 		{
-			IDENTITY tridtt(part[i++], part[i++]);
+			std::string firstname = part[i++];
+			std::string lastname = part[i++];
+			IDENTITY tridtt(firstname, lastname);
 			MONEY trcapital = 0;
 #ifndef CAPITAL_IGNORE
 			trcapital = stof(part[i++]);
