@@ -2,7 +2,7 @@
 
 #ifndef HELP
 #define HELP ""\
-"Welcome to use tcsys, Trip-Count Simulation YS. Here is to represent some functions. ver.05032022\n" \
+"Welcome to use tcsys, Trip-Count Simulation YS. Here is to represent some functions. ver.19032022\n" \
 "new person: creates a new person in the current pool, with the input parameters being their first name, last name, and an optional amount received.\n"\
 "select person : selects a person by their first and last name.\n"\
 "unselect person : unselects a person by their first and last name.\n"\
@@ -56,6 +56,84 @@
 #include <fstream>
 #include <iostream>
 #include <sstream>
+
+/*
+data file example :
+
+pool
+1
+end
+
+bill
+1
+20
+dinner
+false
+just a dinner
+end
+
+bill
+2
+20
+dinner
+true
+as a counter of dinner
+end
+
+bill
+3
+40
+lunch
+false
+meals
+end
+
+person
+Alexander
+Robinson
+150
+1 3 5 7 10
+end
+
+
+or the same it would work:
+
+
+pool
+1
+
+bill
+1
+20
+dinner
+false
+just a dinner
+
+
+
+
+bill
+2
+20
+dinner
+true
+as a counter of dinner
+
+bill
+3
+40
+lunch
+false
+meals
+person
+Alexander
+Robinson
+150
+1 3 5 7 10
+end
+
+use \end as a \} which doesn't need a \{
+*/
 
 using namespace std;
 
