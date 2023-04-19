@@ -348,6 +348,55 @@ void tcsys::_copy(string txt)//copy in android
 }
 #endif // !ANDROID_DEPLOY
 
+
+const int tcsys::_equiliber(string& txt)
+{
+	string plan = "/n";
+	const int numps = _p().pspool.size();
+	if (numps <= 0) return 1;
+	else if (numps == 1) return 2;
+	
+	/*
+	vector<MONEY> shouldpay;
+	int i=0;
+	for (person& ps : _p().pspool)
+	{
+		MONEY spay = 0;
+		int j = 0;
+		for (person& subps : _p().pspool)
+		{
+			ID_LIST lst = subps.getBills();
+			for (bill& bl : _p().blpool) for (ID& id : lst)
+			{ 
+				if (bl.getEventID() == id)
+				{
+					if (i == j) spay -= bl.getReceive() / numps * (numps - 1);
+					else spay += bl.getReceive() / numps;
+				}
+			}
+			j++;
+		}
+		shouldpay.push_back(spay);
+		plan += ps.getIdentity().first;
+		plan += " ";
+		plan += ps.getIdentity().second;
+		plan += (spay > 0 ? " should pay : " : " should receive : ");
+		plan += to_string(abs(spay));
+		plan += "/n";
+		i++;
+	}
+	*/
+
+	vector<MONEY> ununisp,shouldpay;
+	for (person& ps : _p().pspool) ununisp.push_back(-ps.getCapital(_p().blpool));
+	MONEY sum = 0;
+	for (MONEY& money : ununisp) sum += money;
+	const MONEY avr = sum / numps;
+	for (MONEY& money : ununisp) shouldpay.push_back(money - avr);
+	txt += plan;
+	return 0;
+}
+
 const int tcsys::initTcsys()
 {
 #ifdef DEBUG
@@ -626,6 +675,7 @@ const int tcsys::printPersonalBill()
 			MONEY mn = ps.getCapital(_p().blpool);
 			if (mn != 0) bills += "capital total : " + to_string(mn) + '\n';
 		}
+		_equiliber(bills);
 	}
 	cout << bills;
 	return 0;

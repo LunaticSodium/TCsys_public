@@ -198,7 +198,7 @@ private:
     const int _saveConfig();
     const int _loadConfig();
     const int _copy(string const txt);                   //copy a text
-
+    const int _equiliber(string& txt);
     //streampos _locatepersonidlist(ID pl_id, IDENTITY idtt);
 
 public:                                             
