@@ -2,7 +2,7 @@
 
 #ifndef HELP
 #define HELP ""\
-"Welcome to use tcsys, Trip-Count Simulation YS. Here is to represent some functions. ver.19042023\n" \
+"Welcome to use tcsys, Trip-Count Simulation YS. Here is to represent some functions. ver a1.05 19042023\n" \
 "new person: creates a new person in the current pool, with the input parameters being their first name, last name, and an optional amount received.\n"\
 "select person : selects a person by their first and last name.\n"\
 "unselect person : unselects a person by their first and last name.\n"\
