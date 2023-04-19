@@ -136,6 +136,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="bill.h" />
+    <ClInclude Include="main.h" />
     <ClInclude Include="person.h" />
     <ClInclude Include="reaction.h" />
     <ClInclude Include="tcsys.h" />
@@ -151,6 +152,11 @@
       <LanguageStandard Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">stdcpp20</LanguageStandard>
     </ClCompile>
     <ClCompile Include="undoredo.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="config.txt" />
+    <Text Include="data.txt" />
+    <Text Include="data_tricountdemo.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

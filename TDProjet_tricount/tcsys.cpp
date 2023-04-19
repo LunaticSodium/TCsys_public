@@ -348,6 +348,142 @@ void tcsys::_copy(string txt)//copy in android
 }
 #endif // !ANDROID_DEPLOY
 
+
+const int tcsys::_equiliber(string& txt)	//In first note it's a money-bl-ps match algo, which is in fact quicker.
+{											//But with person::getCapital it could be simple to read & write.
+	string plan = "\n";						//In second note it's a debt calcul algo, which distribute debt in pair as sequence directly, easy for code R&W but bad for output,
+	const int numps = _p().pspool.size();	//which can't even catch the algo that tricount use, that re-sequence by abs and construct new debt-pair vector.
+	if (numps <= 0) return 1;
+	else if (numps == 1) return 2;
+	
+	/*
+	vector<MONEY> shouldpay;
+	int i=0;
+	for (person& ps : _p().pspool)
+	{
+		MONEY spay = 0;
+		int j = 0;
+		for (person& subps : _p().pspool)
+		{
+			ID_LIST lst = subps.getBills();
+			for (bill& bl : _p().blpool) for (ID& id : lst)
+			{ 
+				if (bl.getEventID() == id)
+				{
+					if (i == j) spay -= bl.getReceive() / numps * (numps - 1);
+					else spay += bl.getReceive() / numps;
+				}
+			}
+			j++;
+		}
+		shouldpay.push_back(spay);
+		plan += ps.getIdentity().first;
+		plan += " ";
+		plan += ps.getIdentity().second;
+		plan += (spay > 0 ? " should pay : " : " should receive : ");
+		plan += to_string(abs(spay));
+		plan += "/n";
+		i++;
+	}
+	*/
+
+	vector<MONEY> shouldpay(numps, 0);
+	for (int i = 0; i < numps; i++) shouldpay[i] = -_p().pspool[i].getCapital(_p().blpool);
+	MONEY sum = 0;
+	for (MONEY& money : shouldpay) sum += money;
+	const MONEY avr = sum / numps;
+
+	/*
+	for (MONEY& money : ununisp) shouldpay.push_back(money - avr);
+	int j = 0;
+	for (int i = 0; i < shouldpay.size(); i++)
+	{
+		if (i - j > 0) for (int k = 0; k < i - j; k++) if (j + k < shouldpay.size() ? shouldpay[j + k] > 0 : false)
+		{
+			const MONEY mi = shouldpay[i], mj = shouldpay[j];
+			const string pi = _p().pspool[i].getIdentity().first + ' ' + _p().pspool[i].getIdentity().second + ' ';
+			const string pj = _p().pspool[j].getIdentity().first + ' ' + _p().pspool[j].getIdentity().second + ' ';
+			if (mj >= 0 && mi <= 0 && abs(mi) >= abs(mj))
+			{
+				shouldpay[i] += mj;
+				shouldpay[j] = 0;
+				plan += pj + "should pay " + pi + to_string(mj) + " " + _crc() + "\n" ;
+				j++;
+				continue;
+			}
+			else if (mj >= 0 && mi <= 0 && abs(mi) < abs(mj))
+			{
+				shouldpay[j] += mi;
+				shouldpay[i] = 0;
+				plan += pj + "should pay " + pi + to_string(mi) + " " + _crc() + "\n";
+				break;
+			}
+			else if (mj <= 0 && mi >= 0 && abs(mi) >= abs(mj))
+			{
+				shouldpay[i] += mj;
+				shouldpay[j] = 0;
+				plan += pi + "should pay " + pj + to_string(mj) + " " + _crc() + "\n";
+				j++;
+				continue;
+			}
+			else if (mj <= 0 && mi >= 0 && abs(mi) < abs(mj))
+			{
+				shouldpay[j] += mi;
+				shouldpay[i] = 0;
+				plan += pi + "should pay " + pj + to_string(mi) + " " + _crc() + "\n";
+				break;
+			}
+		}
+		for (; j <= i && shouldpay[j] == 0; j++);
+	}
+	*/
+
+	vector<MONEY> debts(numps, 0);
+	vector<pair<MONEY, int>> debt_indices(numps);
+
+	for (int i = 0; i < numps; i++)
+	{
+		debts[i] = shouldpay[i] - avr;
+		plan += _p().pspool[i].getIdentity().first + " " + _p().pspool[i].getIdentity().second + " has " + (debts[i] > 0 ? "owned " : "borrowed ") + to_string(abs(debts[i])) + " " + _crc() + "\n";
+	}
+	plan += "\n";
+
+	for (int i = 0; i < numps; i++) 
+	{	
+		for (int i = 0; i < numps; i++) debt_indices[i] = make_pair(abs(debts[i]), i);
+		std::sort(debt_indices.rbegin(), debt_indices.rend());
+		if (debt_indices[0].first <= 0.0001) break;
+		MONEY amount = 0;
+		int from = -1, to = -1;
+		if (debts[debt_indices[0].second] > 0) from = debt_indices[0].second;
+		else to = debt_indices[0].second;
+		for (int i = 1; i < numps; i++)
+		{
+			if (to == -1 && debts[debt_indices[i].second] < 0)
+			{
+				to = debt_indices[i].second;
+				amount = abs(debts[to]);
+				break;
+			}
+			else if (from == -1 && debts[debt_indices[i].second] > 0)
+			{
+				from = debt_indices[i].second;
+				amount = abs(debts[from]);
+				break;
+			}
+		}
+		if (amount == 0) break;
+
+		debts[from] -= amount;
+		debts[to] += amount;
+		plan += _p().pspool[from].getIdentity().first + " " + _p().pspool[from].getIdentity().second + " should pay " + _p().pspool[to].getIdentity().first + " " + _p().pspool[to].getIdentity().second + " " + to_string(amount) + " " + _crc() + "\n";
+	}
+	plan += "\n";
+
+	txt += plan;
+	return 0;
+}
+
 const int tcsys::initTcsys()
 {
 #ifdef DEBUG
@@ -626,10 +762,21 @@ const int tcsys::printPersonalBill()
 			MONEY mn = ps.getCapital(_p().blpool);
 			if (mn != 0) bills += "capital total : " + to_string(mn) + '\n';
 		}
+		//_equiliber(bills);
 	}
 	cout << bills;
 	return 0;
 }
+
+const int tcsys::equilibe()
+{
+	string bills;
+	_equiliber(bills);
+	cout << bills;
+	return 0;
+}
+
+
 
 const int tcsys::newEvent(MONEY const amount, std::string const name, std::string const contest, bool single)
 {
@@ -785,7 +932,7 @@ const int tcsys::setExchangeRate(MONEY const rate)
 
 const int tcsys::exchange()
 {
-	for (POOL pl : _pool) for (bill bl : pl.blpool) bl.setAmount(bl.getAmount() * _config.exchange_rate);
+	for (POOL& pl : _pool) for (bill& bl : pl.blpool) bl.setAmount( bl.getAmount() * _config.exchange_rate);
 	_config.exchange_rate = 1 / _config.exchange_rate;
 	_config.is_exchanged = !_config.is_exchanged;
 	return 0;

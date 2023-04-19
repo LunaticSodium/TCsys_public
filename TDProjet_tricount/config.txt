@@ -1,4 +1,4 @@
-exchange_rate 7.340000
+exchange_rate 7.3400
 is_exchanged 0
 input_as_total 0
 bill_generate_as_pair 0

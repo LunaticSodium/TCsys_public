@@ -2,14 +2,15 @@
 
 #ifndef HELP
 #define HELP ""\
-"Welcome to use tcsys, Trip-Count Simulation YS. Here is to represent some functions. ver.18042023\n" \
+"Welcome to use tcsys, Trip-Count Simulation YS. Here is to represent some functions. ver.19042023\n" \
 "new person: creates a new person in the current pool, with the input parameters being their first name, last name, and an optional amount received.\n"\
 "select person : selects a person by their first and last name.\n"\
 "unselect person : unselects a person by their first and last name.\n"\
 "remove person : removes the selected person from the pool.\n"\
 "checkout person : calculates the total amount owed by the selected persons and prints it out.\n"\
 "print person list : print a list of all persons in current pool.\n"\
-"copy personal bill : copies the bills of the selected persons to the clipboard.\n"\
+"print personal bill : print the bills of the selected persons to the clipboard.\n"\
+"equilibe : print a solution of equilibe.\n"\
 "new event : creates a new event with the input parameters being the amount, name, and contest associated with the event.\n"\
 "fast new event : creates a new event with only the amount"\
 "select all event : selects all events in the current pool.\n"\
@@ -36,7 +37,9 @@
 #define COPY_LENGTH 200
 #define DATA_FILE_NAME "data.txt"
 #define CONFIG_FILE_NAME "config.txt"
-#define DEFAUTE_EXCHANGE_RATE 7.34                  //EUR to CNY rate, 03032023 
+#define DEFAUTE_EXCHANGE_RATE 7.34                  //EUR to CNY rate, 03032023
+#define MAINCURRENCY "EUR"
+#define ASSISCURRENCY "CNY"
 
 #ifndef ANDROID_DEPLOY                              //this define allow to jump over some code that made for windows and into those for android deploy. work for _copy
 //#define ANDROID_DEPLOY                        
@@ -56,6 +59,7 @@
 #include <fstream>
 #include <iostream>
 #include <sstream>
+#include <algorithm>
 
 /*
 data file example :
@@ -192,13 +196,15 @@ private:
     const int _registOne(person const ps);
     const int _registOne(ID const pl_id);                //only _rO(ID) will change _cpn in all registO/A function.
     const int _registAll();                              //rOne() like push_back, it add a new part in the LAST of file. rAll overwrite the whole file.
-    //void virtual _refresh()=0;                      //used to be the name of rereadall, well it suppose to be a function only calling a physic engine's refresh function
+    //void virtual _refresh()=0;                         //used to be the name of rereadall, well it suppose to be a function only calling a physic engine's refresh function
 
 
     const int _saveConfig();
     const int _loadConfig();
-    const int _copy(string const txt);                   //copy a text
+    const int _copy(string const txt);                   //copy a text. may not work.
 
+    const string _crc() { return (_config.is_exchanged ? ASSISCURRENCY : MAINCURRENCY); };
+    const int _equiliber(string& txt);
     //streampos _locatepersonidlist(ID pl_id, IDENTITY idtt);
 
 public:                                             
@@ -224,7 +230,7 @@ public:
     const int checkoutPerson();
     const int copyPersonalBill();//copy *selected* persons' bills. not working. 
     const int printPersonalBill();
-
+    const int equilibe();
 
     //Event listed in pool and templist, no database. Class event is renamed as bill because it's actually a key word.
 

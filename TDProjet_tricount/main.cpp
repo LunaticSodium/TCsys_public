@@ -9,6 +9,10 @@ int main()
     tcsystem.initTcsys();
     undoredo<tcsys> udrd(UNDOREDO_DEPTH);
     std::cout << "Enter \"help\" to have more information. \n";
+#ifdef DEBUG
+    std::cout << "Maybe the type error is the convertion of size_t, int and uint. that is a thing inbetween error and warning. \n";
+#endif // DEBUG
+
     while (true)
     {
         std::cout << "Please enter a command : ";
@@ -88,7 +92,12 @@ int main()
             if (com == 0) std::cout << "Print successed. ";
             else std::cout << "Print failed, error code " << com;
         }
-
+        else if (command == "equilibe")
+        {
+            const int com = tcsystem.equilibe();
+            if (com == 0) std::cout << "Print successed. ";
+            else std::cout << "Print failed, error code " << com;
+        }
 
         //Event (bill)
         else if (command == "new event")
